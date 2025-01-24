@@ -1,5 +1,55 @@
 <template>
   <view class="container tui-skeleton">
+    <view class="header">
+      <!-- 演唱会平台筛选 -->
+      <view class="platform-select" @click="platformSelect">
+        <view class="platform-select-text-triangle" :class="{ 'rotate-180': isRotate }"></view>
+        <tui-text
+          size="26"
+          color="#222222"
+          :text="platformSelectList[platformSelectIndex].text"
+        ></tui-text>
+      </view>
+      <!-- 搜索框 -->
+      <view class="search-view-box-right">
+        <tui-input
+          :value="searchValue"
+          placeholder="请输入关键词"
+          radius="34"
+          :size="30"
+          color="#999999"
+          padding="20rpx 34rpx 20rpx 22rpx"
+          background-color="#F9F9F9"
+          :maxlength="20"
+          @input="seacrhInput($event)"
+        >
+          <template #left>
+            <view class="thorui-align__center paddingright13">
+              <tui-icon name="search" color="#999" :size="16" unit="px"></tui-icon>
+            </view>
+          </template>
+          <template #right>
+            <view style="display: flex; align-items: center; flex-shrink: 0">
+              <view
+                v-if="isShut"
+                class="thorui-align__center"
+                style="padding-right: 20rpx"
+                @click="shutChange"
+              >
+                <tui-icon name="close" :size="16"></tui-icon>
+              </view>
+              <view class="thorui-align__center">
+                <view
+                  style="font-weight: bold; font-size: 15px; color: #4ad975"
+                  @click="seacrhTopic"
+                  >搜索</view
+                >
+              </view>
+            </view>
+          </template>
+        </tui-input>
+      </view>
+    </view>
     <image class="logo tui-skeleton-rect" src="/static/logo.png" />
     <view class="text-area tui-skeleton-rect">
       <text class="title tui-skeleton-rect">{{ title }}</text>
@@ -8,17 +58,86 @@
     </view>
   </view>
   <xxt-skeleton :skeleton-show="skeletonShow" :is-list="false"></xxt-skeleton>
+  <tui-actionsheet
+    :show="isRotate"
+    :item-list="platformSelectList"
+    @click="sheetActionClick"
+    @cancel="isRotate = false"
+  >
+  </tui-actionsheet>
 </template>
 
 <script setup lang="ts">
+import { getAlConcertByPlatform } from './hooks/api-hooks';
 const title = ref('Hello');
 const skeletonShow = ref(true);
 const instance = getCurrentInstance();
-onLoad(() => {
+const alConcertByPlatform = ref<any>(null);
+// 输入框输入值
+const searchValue = ref('');
+// 是否显示关闭按钮
+const isShut = ref(false);
+// 是否旋转
+const isRotate = ref(false);
+// 平台筛选文本
+const platformSelectIndex = ref(0);
+// 平台筛选列表
+const platformSelectList = ref([
+  {
+    text: '全部',
+    color: '#2B2B2B'
+  },
+  {
+    text: '大麦',
+    color: '#2B2B2B'
+  },
+  {
+    text: '猫眼',
+    color: '#2B2B2B'
+  }
+]);
+// 清空搜索内容
+const shutChange = () => {
+  isShut.value = false;
+  searchValue.value = '';
+};
+
+// 搜索
+const seacrhTopic = () => {
+  console.log('搜索', searchValue.value);
+};
+
+// 平台筛选
+const platformSelect = () => {
+  isRotate.value = !isRotate.value;
+};
+// 平台筛选点击
+const sheetActionClick = (e: any) => {
+  console.log('e', e);
+  platformSelectIndex.value = e.index;
+  isRotate.value = false;
+};
+
+// 输入框输入值
+const seacrhInput = (e: any) => {
+  searchValue.value = e;
+  if (searchValue.value.length !== 0) {
+    isShut.value = true;
+  } else {
+    isShut.value = false;
+  }
+};
+
+onLoad(async () => {
   // 模拟
   setTimeout(() => {
     skeletonShow.value = false;
   }, 2000);
+  // 获取演唱会数据 默认获取大麦演唱会数据DM
+  alConcertByPlatform.value = await getAlConcertByPlatform({
+    platform: 'DM',
+    cty: '北京'
+  });
 });
 const login = () => {
   console.log('login----');
@@ -43,8 +162,43 @@ const login = () => {
 <style scoped lang="scss">
 .container {
   @include normalContainer();
-  @include normalFlex(column, flex-start, center);
 }
+.header {
+  @include normalFlex(row, flex-start, center);
+  flex-shrink: 0;
+  padding: 10px;
+  /* width: 100%; */
+  background-color: #fff;
+  .search-view-box-right {
+    flex: 1;
+    .paddingright13 {
+      padding-right: 13px;
+    }
+  }
+  .search-view-box-right :deep(.tui-input__border-bottom) {
+    border-bottom: none !important;
+  }
+  .platform-select {
+    @include normalFlex(row, space-between, center);
+    padding: 0 10px 0 0;
+    width: 50px;
+    height: 44px;
+    /* background-color: red; */
+    &-text-triangle {
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 8px solid #222;
+      width: 0;
+      height: 0;
+      transition: transform 0.3s ease;
+      &.rotate-180 {
+        transform: rotate(180deg);
+      }
+    }
+  }
+}
+
+// 以下是测试用的
 .logo {
   margin-left: auto;
   margin-right: auto;
