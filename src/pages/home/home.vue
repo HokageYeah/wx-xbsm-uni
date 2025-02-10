@@ -61,6 +61,7 @@
   <tui-actionsheet
     :show="isRotate"
     :item-list="platformSelectList"
+    :z-index="10000"
     @click="sheetActionClick"
     @cancel="isRotate = false"
   >
@@ -82,20 +83,39 @@ const isRotate = ref(false);
 // 平台筛选文本
 const platformSelectIndex = ref(0);
 // 平台筛选列表
-const platformSelectList = ref([
-  {
-    text: '全部',
-    color: '#2B2B2B'
-  },
-  {
-    text: '大麦',
-    color: '#2B2B2B'
-  },
-  {
-    text: '猫眼',
-    color: '#2B2B2B'
+const platformSelectList = computed(() => {
+  const list = [
+    {
+      text: '全部',
+      color: '#2B2B2B',
+      platform: ''
+    },
+    {
+      text: '大麦',
+      color: '#2B2B2B',
+      platform: 'DM'
+    },
+    {
+      text: '猫眼',
+      color: '#2B2B2B',
+      platform: 'MY'
+    }
+  ];
+  list[platformSelectIndex.value].color = '#4ad975';
+  return list;
+});
+// #ifdef MP-WEIXIN
+watch(isRotate, (newVal) => {
+  console.log('newVal', newVal);
+  if (newVal) {
+    uni.hideTabBar();
+  } else {
+    setTimeout(() => {
+      uni.showTabBar();
+    }, 200);
   }
-]);
+});
+// #endif
 // 清空搜索内容
 const shutChange = () => {
   isShut.value = false;
@@ -105,6 +125,11 @@ const shutChange = () => {
 // 搜索
 const seacrhTopic = () => {
   console.log('搜索', searchValue.value);
+  loadConcertByPlatform(
+    platformSelectList.value[platformSelectIndex.value].platform,
+    '',
+    searchValue.value
+  );
 };
 
 // 平台筛选
@@ -116,6 +141,11 @@ const sheetActionClick = (e: any) => {
   console.log('e', e);
   platformSelectIndex.value = e.index;
   isRotate.value = false;
+  console.log(
+    'list[platformSelectIndex.value].platform',
+    platformSelectList.value[platformSelectIndex.value].platform
+  );
+  loadConcertByPlatform(platformSelectList.value[platformSelectIndex.value].platform, '');
 };
 
 // 输入框输入值
@@ -127,18 +157,29 @@ const seacrhInput = (e: any) => {
     isShut.value = false;
   }
 };
+// 获取演唱会数据 默认获取大麦演唱会数据
+async function loadConcertByPlatform(platform: string, cty: string, keyword = '') {
+  alConcertByPlatform.value = await getAlConcertByPlatform({
+    platform,
+    cty,
+    keyword
+  });
+}
 
 onLoad(async () => {
   // 模拟
   setTimeout(() => {
     skeletonShow.value = false;
   }, 2000);
+  // 首次加载 获取演唱会数据 默认获取所有数据
+  loadConcertByPlatform('', '');
   // 获取演唱会数据 默认获取大麦演唱会数据DM
-  alConcertByPlatform.value = await getAlConcertByPlatform({
-    platform: 'DM',
-    cty: '北京'
-  });
+  // alConcertByPlatform.value = await getAlConcertByPlatform({
+  //   platform: 'DM',
+  //   cty: '北京'
+  // });
 });
+// 登录
 const login = () => {
   console.log('login----');
   instance?.proxy
