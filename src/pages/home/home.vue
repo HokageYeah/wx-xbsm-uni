@@ -50,6 +50,27 @@
         </tui-input>
       </view>
     </view>
+    <!-- <tui-virtual-list
+      ref="virtualList"
+      :item-buffer="30"
+      background="#fff"
+      @change="onChange"
+      @scrolltolower="onScrollToLower"
+    >
+      <tui-virtual-item v-for="(item, index) in virtualItems" :key="index" @click="itemClick(item)">
+        <tui-list-cell padding="0">
+          <view class="tui-list__item">
+            <tui-lazyload-img
+              width="68rpx"
+              height="68rpx"
+              radius="8rpx"
+              :src="item.avatar"
+            ></tui-lazyload-img>
+            <view class="tui-name">{{ `${item.id}-${item.name}` }}</view>
+          </view>
+        </tui-list-cell>
+      </tui-virtual-item>
+    </tui-virtual-list> -->
     <image class="logo tui-skeleton-rect" src="/static/logo.png" />
     <view class="text-area tui-skeleton-rect">
       <text class="title tui-skeleton-rect">{{ title }}</text>
