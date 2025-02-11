@@ -50,33 +50,37 @@
         </tui-input>
       </view>
     </view>
-    <!-- <tui-virtual-list
+    <tui-virtual-list
       ref="virtualList"
-      :item-buffer="30"
+      :item-buffer="15"
       background="#fff"
       @change="onChange"
       @scrolltolower="onScrollToLower"
     >
-      <tui-virtual-item v-for="(item, index) in virtualItems" :key="index" @click="itemClick(item)">
+      <tui-virtual-item
+        v-for="(item, index) in alConcertByPlatform.data.resultData"
+        :key="index"
+        @click="itemClick(item)"
+      >
         <tui-list-cell padding="0">
           <view class="tui-list__item">
             <tui-lazyload-img
-              width="68rpx"
-              height="68rpx"
+              width="168rpx"
+              height="268rpx"
               radius="8rpx"
-              :src="item.avatar"
+              :src="item.verticalPic"
             ></tui-lazyload-img>
             <view class="tui-name">{{ `${item.id}-${item.name}` }}</view>
           </view>
         </tui-list-cell>
       </tui-virtual-item>
-    </tui-virtual-list> -->
-    <image class="logo tui-skeleton-rect" src="/static/logo.png" />
+    </tui-virtual-list>
+    <!-- <image class="logo tui-skeleton-rect" src="/static/logo.png" />
     <view class="text-area tui-skeleton-rect">
       <text class="title tui-skeleton-rect">{{ title }}</text>
       <text class="title tui-skeleton-rect">演出首页</text>
       <button class="login-btn" @click="login">登录</button>
-    </view>
+    </view> -->
   </view>
   <xxt-skeleton :skeleton-show="skeletonShow" :is-list="false"></xxt-skeleton>
   <tui-actionsheet
@@ -186,7 +190,18 @@ async function loadConcertByPlatform(platform: string, cty: string, keyword = ''
     keyword
   });
 }
-
+// 虚拟列表滚动
+const onChange = (e: any) => {
+  console.log('e', e);
+};
+// 虚拟列表滚动到底部
+const onScrollToLower = (e: any) => {
+  console.log('e', e);
+};
+// 点击演唱会
+const itemClick = (item: any) => {
+  console.log('item', item);
+};
 onLoad(async () => {
   // 模拟
   setTimeout(() => {
@@ -258,6 +273,24 @@ const login = () => {
       }
     }
   }
+}
+/* 虚拟列表 */
+.container :deep(.tui-virtual-list),
+.container :deep(.tui-virtual__scroll-view) {
+  height: 80vh !important;
+  background-color: red !important;
+}
+/* 虚拟列表item */
+.container :deep(.tui-virtual-item) {
+  height: auto !important;
+}
+.tui-list__item {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 10px;
+  width: 100%;
+  height: 200px;
 }
 
 // 以下是测试用的
