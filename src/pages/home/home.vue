@@ -65,6 +65,7 @@
         <tui-list-cell padding="0">
           <view class="tui-list__item">
             <tui-lazyload-img
+              class="tui-skeleton-rect"
               width="168rpx"
               height="268rpx"
               radius="8rpx"
@@ -96,6 +97,14 @@
               <view class="tui-label_box-content">
                 {{ `状态: ${item.showstatus}` }}
               </view>
+              <view class="tui-label_box-content">
+                <tui-text size="26" color="#222222" text="平台:"></tui-text>
+                <tui-text
+                  size="26"
+                  color="#4ad975"
+                  :text="getPlatformStr(item.platform)"
+                ></tui-text>
+              </view>
             </view>
           </view>
         </tui-list-cell>
@@ -125,6 +134,7 @@ const title = ref('Hello');
 const skeletonShow = ref(true);
 const instance = getCurrentInstance();
 const alConcertByPlatform = ref<any>(null);
+const router = useRouter();
 // 输入框输入值
 const searchValue = ref('');
 // 是否显示关闭按钮
@@ -155,6 +165,14 @@ const platformSelectList = computed(() => {
   list[platformSelectIndex.value].color = '#4ad975';
   return list;
 });
+// 平台
+const getPlatformStr = (platform: string) => {
+  const platformList = {
+    DM: '大麦',
+    MY: '猫眼'
+  };
+  return platformList[platform as keyof typeof platformList];
+};
 // #ifdef MP-WEIXIN
 watch(isRotate, (newVal) => {
   console.log('newVal', newVal);
@@ -227,6 +245,9 @@ const onScrollToLower = (e: any) => {
 // 点击演唱会
 const itemClick = (item: any) => {
   console.log('item', item);
+  router.push({
+    path: `/pages/home/concert-detail?id=${item.showid}`
+  });
 };
 onLoad(async () => {
   // 模拟

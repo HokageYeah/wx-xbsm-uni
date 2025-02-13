@@ -47,6 +47,16 @@
         "navigationBarBackgroundColor": "#FFFFFF",
         "navigationBarTextStyle": "black"
       }
+    },
+    {
+      "path": "pages/home/concert-detail",
+      "name": "concertDetail",
+      "aliasPath": "/",
+      "style": {
+        "navigationBarTitleText": "演唱会详情",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "black"
+      }
     }
   ],
   "subPackages": [
