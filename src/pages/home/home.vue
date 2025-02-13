@@ -70,7 +70,33 @@
               radius="8rpx"
               :src="item.verticalPic"
             ></tui-lazyload-img>
-            <view class="tui-name">{{ `${item.id}-${item.name}` }}</view>
+            <view class="tui-label_box">
+              <tui-overflow-hidden :line-clamp="2" bold>
+                {{ item.showname }}
+              </tui-overflow-hidden>
+              <view class="tui-label_box-content">
+                <tui-icon name="time" :size="16"></tui-icon>
+                {{ item.showtime }}
+              </view>
+              <view class="tui-label_box-content">
+                <tui-icon name="location" :size="16"></tui-icon>
+                {{ `${item.venuecity}-${item.venue}` }}
+              </view>
+              <view v-if="item.description" class="tui-label_box-content">
+                <tui-icon name="people" :size="16"></tui-icon>
+                <view class="tui-label_box-content-description">
+                  <tui-overflow-hidden :line-clamp="2" size="25">
+                    {{ item.description }}
+                  </tui-overflow-hidden>
+                </view>
+              </view>
+              <view class="tui-label_box-content">
+                {{ `票价: ${item.price_str}` }}
+              </view>
+              <view class="tui-label_box-content">
+                {{ `状态: ${item.showstatus}` }}
+              </view>
+            </view>
           </view>
         </tui-list-cell>
       </tui-virtual-item>
@@ -286,11 +312,25 @@ const login = () => {
 }
 .tui-list__item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   box-sizing: border-box;
   padding: 10px;
   width: 100%;
-  height: 200px;
+  min-height: 150px;
+  .tui-label_box {
+    flex: 1;
+    margin-left: 10px;
+    height: 100%;
+    /* background-color: #4ad975; */
+    &-content {
+      margin-top: 5px;
+      font-size: 12px;
+      @include normalFlex(row, flex-start, center);
+      :first-child {
+        margin-right: 5px;
+      }
+    }
+  }
 }
 
 // 以下是测试用的
