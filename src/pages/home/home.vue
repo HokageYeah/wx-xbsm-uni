@@ -246,7 +246,7 @@ const onScrollToLower = (e: any) => {
 const itemClick = (item: any) => {
   console.log('item', item);
   router.push({
-    path: `/pages/home/concert-detail?id=${item.showid}`
+    path: `/pages/home/concert-detail?id=${item.showid}&platform=${item.platform}`
   });
 };
 onLoad(async () => {
@@ -264,6 +264,9 @@ onLoad(async () => {
 });
 // 登录
 const login = () => {
+  router.push({
+    path: `/pages/home/concert-detail?id=${1}`
+  });
   console.log('login----');
   instance?.proxy
     ?.$uniAjax({
@@ -324,7 +327,7 @@ const login = () => {
 /* 虚拟列表 */
 .container :deep(.tui-virtual-list),
 .container :deep(.tui-virtual__scroll-view) {
-  height: 80vh !important;
+  height: 90vh !important;
   background-color: red !important;
 }
 /* 虚拟列表item */
