@@ -72,7 +72,7 @@
               :src="item.verticalPic"
             ></tui-lazyload-img>
             <view class="tui-label_box">
-              <tui-overflow-hidden :line-clamp="2" bold>
+              <tui-overflow-hidden :line-clamp="2" bold :size="28">
                 {{ item.showname }}
               </tui-overflow-hidden>
               <view class="tui-label_box-content">
@@ -92,7 +92,7 @@
                 </view>
               </view>
               <view class="tui-label_box-content">
-                {{ `票价: ${item.price_str}` }}
+                {{ `票价: ￥${item.price_str}` }}
               </view>
               <view class="tui-label_box-content">
                 {{ `状态: ${item.showstatus}` }}
@@ -129,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { getAlConcertByPlatform } from './hooks/api-hooks';
+import { getH5AlConcertByPlatform } from './hooks/api-hooks';
 const title = ref('Hello');
 const skeletonShow = ref(true);
 const instance = getCurrentInstance();
@@ -228,7 +228,7 @@ const seacrhInput = (e: any) => {
 };
 // 获取演唱会数据 默认获取大麦演唱会数据
 async function loadConcertByPlatform(platform: string, cty: string, keyword = '') {
-  alConcertByPlatform.value = await getAlConcertByPlatform({
+  alConcertByPlatform.value = await getH5AlConcertByPlatform({
     platform,
     cty,
     keyword
