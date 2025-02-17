@@ -1,12 +1,38 @@
 <template>
   <view class="container">
-    <tui-lazyload-img
-      class="tui-skeleton-rect tui-skeleton-rect"
-      width="168rpx"
-      height="268rpx"
-      radius="8rpx"
-      src="https://img.alicdn.com/bao/uploaded/https://img.alicdn.com/imgextra/i3/2251059038/O1CN01SubuZH2GdSfusjsb1_!!2251059038.png"
-    ></tui-lazyload-img>
+    <view class="concert-detail-header">
+      <tui-lazyload-img
+        class="tui-skeleton-rect tui-skeleton-rect"
+        width="168rpx"
+        height="268rpx"
+        radius="8rpx"
+        :src="showDetail.verticalPic"
+      ></tui-lazyload-img>
+      <view class="concert-detail-header-box">
+        <tui-overflow-hidden :line-clamp="3" bold :size="30" class="tui-skeleton-rect">
+          {{ showDetail.showname }}
+        </tui-overflow-hidden>
+        <view class="concert-detail-header-box-content tui-skeleton-rect">
+          {{ showDetail.showtime }}
+        </view>
+        <view class="concert-detail-header-box-content tui-skeleton-rect">
+          {{ `${showDetail.venuecity}-${showDetail.venue}` }}
+        </view>
+        <view class="concert-detail-header-box-content tui-skeleton-rect">
+          <view class="concert-detail-header-box-content-description">
+            <tui-overflow-hidden :line-clamp="2" size="25">
+              {{ showDetail.description }}
+            </tui-overflow-hidden>
+          </view>
+        </view>
+        <view class="concert-detail-header-box-content tui-skeleton-rect">
+          {{ `票价: ${showDetail.price_str}` }}
+        </view>
+        <view class="concert-detail-header-box-content tui-skeleton-rect">
+          {{ `状态: ${showDetail.showstatus}` }}
+        </view>
+      </view>
+    </view>
   </view>
   <tui-skeleton
     v-if="skeletonShow"
@@ -115,11 +141,17 @@ preloadData.value = [
 // #endif
 onLoad(async (options: any) => {
   // 获取演唱会详情
-  showDetail.value = await getH5AlConcertDetail({
+  const res: any = await getH5AlConcertDetail({
     platform: 'DM',
     show_id: options.id
   });
-  skeletonShow.value = false;
+  const retstr = res.ret[0];
+  if (retstr.includes('SUCCESS')) {
+    showDetail.value = res.data.legacy;
+  }
+  setTimeout(() => {
+    skeletonShow.value = false;
+  }, 1000);
   console.log('showDetail', showDetail.value);
 });
 </script>
@@ -128,5 +160,26 @@ onLoad(async (options: any) => {
 .container {
   @include normalContainer();
   padding: 10px;
+}
+.concert-detail-header {
+  overflow: hidden;
+  border-radius: 8rpx;
+  min-height: 134px;
+  background-color: #f5f5f5;
+  @include normalFlex(row, flex-start, center);
+  .concert-detail-header-box {
+    flex: 1;
+    margin-left: 10px;
+    height: 100%;
+    background-color: aqua;
+    &-content {
+      margin-top: 5px;
+      font-size: 12px;
+      @include normalFlex(row, flex-start, center);
+      :first-child {
+        margin-right: 5px;
+      }
+    }
+  }
 }
 </style>
