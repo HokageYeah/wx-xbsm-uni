@@ -51,6 +51,7 @@
       </view>
     </view>
     <tui-virtual-list
+      v-if="!skeletonShow"
       ref="virtualList"
       :item-buffer="15"
       background="#fff"
@@ -58,14 +59,14 @@
       @scrolltolower="onScrollToLower"
     >
       <tui-virtual-item
-        v-for="(item, index) in alConcertByPlatform.data.resultData"
+        v-for="(item, index) in alConcertByPlatform?.data?.resultData"
         :key="index"
         @click="itemClick(item)"
       >
         <tui-list-cell padding="0">
           <view class="tui-list__item">
             <tui-lazyload-img
-              class="tui-skeleton-rect"
+              class="tui-skeleton-rect tui-skeleton-rect"
               width="168rpx"
               height="268rpx"
               radius="8rpx"
@@ -75,15 +76,15 @@
               <tui-overflow-hidden :line-clamp="2" bold :size="28">
                 {{ item.showname }}
               </tui-overflow-hidden>
-              <view class="tui-label_box-content">
+              <view class="tui-label_box-content tui-skeleton-rect">
                 <tui-icon name="time" :size="16"></tui-icon>
                 {{ item.showtime }}
               </view>
-              <view class="tui-label_box-content">
+              <view class="tui-label_box-content tui-skeleton-rect">
                 <tui-icon name="location" :size="16"></tui-icon>
                 {{ `${item.venuecity}-${item.venue}` }}
               </view>
-              <view v-if="item.description" class="tui-label_box-content">
+              <view v-if="item.description" class="tui-label_box-content tui-skeleton-rect">
                 <tui-icon name="people" :size="16"></tui-icon>
                 <view class="tui-label_box-content-description">
                   <tui-overflow-hidden :line-clamp="2" size="25">
@@ -91,13 +92,13 @@
                   </tui-overflow-hidden>
                 </view>
               </view>
-              <view class="tui-label_box-content">
+              <view class="tui-label_box-content tui-skeleton-rect">
                 {{ `票价: ￥${item.price_str}` }}
               </view>
-              <view class="tui-label_box-content">
+              <view class="tui-label_box-content tui-skeleton-rect">
                 {{ `状态: ${item.showstatus}` }}
               </view>
-              <view class="tui-label_box-content">
+              <view class="tui-label_box-content tui-skeleton-rect">
                 <tui-text size="26" color="#222222" text="平台:"></tui-text>
                 <tui-text
                   size="26"
@@ -117,7 +118,7 @@
       <button class="login-btn" @click="login">登录</button>
     </view> -->
   </view>
-  <xxt-skeleton :skeleton-show="skeletonShow" :is-list="false"></xxt-skeleton>
+  <xxt-skeleton :skeleton-show="skeletonShow" :is-list="true"></xxt-skeleton>
   <tui-actionsheet
     :show="isRotate"
     :item-list="platformSelectList"

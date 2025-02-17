@@ -26,11 +26,11 @@ export function getH5AlConcertByPlatform(data: IAlConcertByPlatformType) {
 }
 
 /**
- * 获取演唱会详情
+ * 获取演唱会详情 h5
  */
-export function getAlConcertDetail(data: IAlConcertDetailType) {
+export function getH5AlConcertDetail(data: IAlConcertDetailType) {
   return ajax({
-    url: '/api/v1/web/get.item.detail.by.platform',
+    url: '/api/v1/h5/get.item.detail.by.platform',
     method: 'GET',
     data
   });
