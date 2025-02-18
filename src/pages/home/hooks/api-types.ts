@@ -8,4 +8,5 @@ export interface IAlConcertByPlatformType {
 export interface IAlConcertDetailType {
   platform: string; // 平台 1:大麦DM 2:猫眼MM 3:票星球PS
   show_id: string; // 演唱会id
+  session_id?: string; // 场次id
 }

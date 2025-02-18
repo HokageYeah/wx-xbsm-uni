@@ -35,3 +35,14 @@ export function getH5AlConcertDetail(data: IAlConcertDetailType) {
     data
   });
 }
+
+/**
+ * 获取演唱会票价详情（检测当前场次是否有票）
+ */
+export function getH5AlConcertTicketDetail(data: IAlConcertDetailType) {
+  return ajax({
+    url: '/api/v1/h5/check.ticket.by.platform',
+    method: 'GET',
+    data
+  });
+}
