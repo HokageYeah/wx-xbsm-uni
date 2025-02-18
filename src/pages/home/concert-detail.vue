@@ -91,11 +91,16 @@
             class="concert-detail-content-sku-item-sku-item"
             :class="[{ 'concert-detail-content-sku-item-sku-item-active': skuitem.checked }]"
             @click="skuSelectHandle(skuitem)"
-            >{{ skuitem.priceName }}</view
+            >{{ `${skuitem.priceName} - ￥${skuitem.price}` }}</view
           >
         </view>
       </view>
     </view>
+  </view>
+  <view class="container-footer">
+    <tui-form-button background="#4ad975" :disabled="submitDisabled" @click="handleSubmit">{{
+      submitText
+    }}</tui-form-button>
   </view>
   <tui-skeleton
     v-if="skeletonShow"
@@ -110,6 +115,8 @@ const showDetail = ref<any>(null);
 const perform_skuList = ref<any>([]);
 const skeletonShow = ref(true);
 const preloadData = ref();
+const submitText = ref('');
+const submitDisabled = ref(true);
 // #ifdef MP-WEIXIN
 // 在微信中拿不到节点信息，此处手动塞一个默认值
 preloadData.value = [
@@ -253,6 +260,27 @@ onLoad(async (options: any) => {
   console.log('showDetail', showDetail.value);
 });
 
+watch(
+  () => perform_skuList.value,
+  (newVal) => {
+    const skulist = perform_skuList.value.filter((item: any) => {
+      return item.skuList.some((skuitem: any) => skuitem.checked);
+    });
+    // 场次
+    let perform_skuList_select = 0;
+    perform_skuList.value.forEach((item: any) => {
+      const skulist_select = item.skuList.filter((skuitem: any) => skuitem.checked);
+      perform_skuList_select += skulist_select.length;
+    });
+    submitDisabled.value = perform_skuList_select === 0;
+    const str = `开始订阅（公订阅${skulist.length}场 共${perform_skuList_select}价格）`;
+    submitText.value = str;
+  },
+  {
+    deep: true
+  }
+);
+
 const radioList = ref([
   {
     id: '1',
@@ -296,6 +324,21 @@ const skuSelectHandle = (item: any) => {
 const performChecked = (item: any) => {
   item.checked = !item.skuList.some((skuitem: any) => !skuitem.checked);
   return item.checked;
+};
+const handleSubmit = () => {
+  const perform_skuList_select = perform_skuList.value.filter((item: any) => {
+    return item.skuList.some((skuitem: any) => skuitem.checked);
+  });
+  // 整理提交的场次和票种
+  const allperform_skuList = perform_skuList_select.map((item: any) => {
+    return {
+      performId: item.performId,
+      skuId: item.skuList
+        .filter((skuitem: any) => skuitem.checked)
+        .map((skuitem: any) => skuitem.skuId)
+    };
+  });
+  console.log('allperform_skuList---', allperform_skuList);
 };
 </script>
 
@@ -398,5 +441,12 @@ const performChecked = (item: any) => {
       color: #fff;
     }
   }
+}
+.container-footer {
+  // 固定在底部
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 </style>
