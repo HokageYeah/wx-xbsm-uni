@@ -1,4 +1,8 @@
-import type { IAlConcertByPlatformType, IAlConcertDetailType } from './api-types';
+import type {
+  IAlConcertByPlatformType,
+  IAlConcertDetailType,
+  IRecordWebConcertMonitorType
+} from './api-types';
 import ajax from '@/uni-module-common/http';
 /**
  *  获取网页web平台下的演唱会搜索所有数据
@@ -44,5 +48,19 @@ export function getH5AlConcertTicketDetail(data: IAlConcertDetailType) {
     url: '/api/v1/h5/check.ticket.by.platform',
     method: 'GET',
     data
+  });
+}
+
+/**
+ * 添加演唱会监控数据
+ */
+export function recordWebConcertMonitor(data: IRecordWebConcertMonitorType) {
+  return ajax({
+    url: '/api/v1/web/record.monitor.by.platform',
+    method: 'POST',
+    data,
+    custom: {
+      showLoading: true
+    }
   });
 }

@@ -110,7 +110,11 @@
 </template>
 
 <script setup lang="ts">
-import { getH5AlConcertDetail, getH5AlConcertTicketDetail } from './hooks/api-hooks';
+import {
+  getH5AlConcertDetail,
+  getH5AlConcertTicketDetail,
+  recordWebConcertMonitor
+} from './hooks/api-hooks';
 const showDetail = ref<any>(null);
 const perform_skuList = ref<any>([]);
 const skeletonShow = ref(true);
@@ -325,20 +329,40 @@ const performChecked = (item: any) => {
   item.checked = !item.skuList.some((skuitem: any) => !skuitem.checked);
   return item.checked;
 };
-const handleSubmit = () => {
+const handleSubmit = async () => {
   const perform_skuList_select = perform_skuList.value.filter((item: any) => {
     return item.skuList.some((skuitem: any) => skuitem.checked);
   });
   // 整理提交的场次和票种
   const allperform_skuList = perform_skuList_select.map((item: any) => {
     return {
-      performId: item.performId,
-      skuId: item.skuList
+      perform_id: item.performId,
+      perform_name: item.performName,
+      sku_list: item.skuList
         .filter((skuitem: any) => skuitem.checked)
-        .map((skuitem: any) => skuitem.skuId)
+        .map((skuitem: any) => {
+          return {
+            sku_id: skuitem.skuId,
+            price_id: skuitem.priceId,
+            price_name: skuitem.priceName
+          };
+        })
     };
   });
-  console.log('allperform_skuList---', allperform_skuList);
+  const handelData = {
+    show_id: showDetail.value.showid,
+    show_name: showDetail.value.showname,
+    // 监控持续时间
+    deadline: '2025-03-18 00:00:00',
+    // 监控的微信id
+    wx_token: '111',
+    venue_city_name: showDetail.value.venuecity,
+    venue_name: showDetail.value.venue,
+    venue_addr: showDetail.value.venueAddr,
+    ticket_perform: allperform_skuList
+  };
+  const res: any = await recordWebConcertMonitor(handelData);
+  console.log('handelData---', res);
 };
 </script>
 

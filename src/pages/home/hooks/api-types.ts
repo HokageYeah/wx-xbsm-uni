@@ -10,3 +10,14 @@ export interface IAlConcertDetailType {
   show_id: string; // 演唱会id
   session_id?: string; // 场次id
 }
+
+export interface IRecordWebConcertMonitorType {
+  show_id: string; // 演唱会id
+  show_name: string; // 演唱会名称
+  deadline: string; // 监控持续时间
+  wx_token: string; // 监控的微信id
+  venue_city_name: string; // 场馆城市
+  venue_name: string; // 场馆名称
+  venue_addr: string; // 场馆地址
+  ticket_perform: any[]; // 票价信息
+}
