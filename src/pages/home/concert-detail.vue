@@ -91,8 +91,13 @@
             class="concert-detail-content-sku-item-sku-item"
             :class="[{ 'concert-detail-content-sku-item-sku-item-active': skuitem.checked }]"
             @click="skuSelectHandle(skuitem)"
-            >{{ `${skuitem.priceName} - ￥${skuitem.price}` }}</view
-          >
+            >{{ `${skuitem.priceName} - ￥${skuitem.price}` }}
+            <view
+              v-if="skuitem.skuSalable !== 'false'"
+              class="concert-detail-content-sku-item-sku-item-tag"
+              >缺货</view
+            >
+          </view>
         </view>
       </view>
     </view>
@@ -452,6 +457,7 @@ const handleSubmit = async () => {
     margin-top: 10px;
     @include normalFlex(row, flex-start, center);
     &-item {
+      position: relative;
       margin-right: 10px !important;
       margin-bottom: 10px !important;
       padding: 4px 8px;
@@ -463,6 +469,22 @@ const handleSubmit = async () => {
     &-item-active {
       background-color: #4ad975;
       color: #fff;
+    }
+    &-item-tag {
+      // position: absolute !important;
+      display: inline-block;
+      right: 0;
+      top: 0;
+      margin-left: 6px;
+      padding: 2px;
+      border: 1px solid #6a7a99;
+      border-radius: 5px;
+      width: 40px;
+      background-color: #f5f5f5;
+      line-height: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #6a7a99;
     }
   }
 }
