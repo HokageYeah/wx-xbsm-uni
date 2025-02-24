@@ -57,6 +57,15 @@
         "navigationBarBackgroundColor": "#FFFFFF",
         "navigationBarTextStyle": "black"
       }
+    },
+    {
+      "path": "pages/home/select-city",
+      "name": "selectCity",
+      "style": {
+        "navigationBarTitleText": "选择城市",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "black"
+      }
     }
   ],
   "subPackages": [

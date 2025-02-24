@@ -10,6 +10,11 @@
           :text="platformSelectList[platformSelectIndex].text"
         ></tui-text>
       </view>
+      <!-- 选择城市 -->
+      <view class="select-city" @click="selectCity">
+        <view class="select-city-text-triangle"></view>
+        <tui-text size="26" color="#222222" text="全国"></tui-text>
+      </view>
       <!-- 搜索框 -->
       <view class="search-view-box-right">
         <tui-input
@@ -263,6 +268,12 @@ onLoad(async () => {
   //   cty: '北京'
   // });
 });
+// 选择城市
+const selectCity = () => {
+  router.push({
+    path: '/pages/home/select-city'
+  });
+};
 // 登录
 const login = () => {
   router.push({
@@ -306,10 +317,13 @@ const login = () => {
   .search-view-box-right :deep(.tui-input__border-bottom) {
     border-bottom: none !important;
   }
-  .platform-select {
+  .platform-select,
+  .select-city {
     @include normalFlex(row, space-between, center);
+    // 不放大也不缩小
+    // platform-select 和 select-city 的宽度一样
     padding: 0 10px 0 0;
-    width: 50px;
+    min-width: 50px;
     height: 44px;
     /* background-color: red; */
     &-text-triangle {
