@@ -17,6 +17,16 @@ export function getWebAlConcertByPlatform(data: IAlConcertByPlatformType) {
     }
   });
 }
+/**
+ * 获取网页H5平台下的演唱会城市列表
+ */
+export function getH5AlConcertCityListByPlatform(data: { platform: string }) {
+  return ajax({
+    url: '/api/v1/h5/get.city.area.by.platform',
+    method: 'GET',
+    data
+  });
+}
 
 /**
  * 获取网页H5平台下的演唱会搜索所有数据

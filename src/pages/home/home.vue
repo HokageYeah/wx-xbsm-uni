@@ -13,7 +13,7 @@
       <!-- 选择城市 -->
       <view class="select-city" @click="selectCity">
         <view class="select-city-text-triangle"></view>
-        <tui-text size="26" color="#222222" text="全国"></tui-text>
+        <tui-text size="26" color="#222222" :text="currentCity.cityName"></tui-text>
       </view>
       <!-- 搜索框 -->
       <view class="search-view-box-right">
@@ -132,6 +132,7 @@
     @cancel="isRotate = false"
   >
   </tui-actionsheet>
+  <tui-loading v-if="disablePullUp"></tui-loading>
 </template>
 
 <script setup lang="ts">
@@ -141,6 +142,12 @@ const skeletonShow = ref(true);
 const instance = getCurrentInstance();
 const alConcertByPlatform = ref<any>(null);
 const router = useRouter();
+const eventBus = instance!.appContext.config.globalProperties.$eventBus;
+const currentCity = ref({
+  cityId: '110100',
+  cityName: '北京',
+  platformCityId: '852'
+});
 // 输入框输入值
 const searchValue = ref('');
 // 是否显示关闭按钮
@@ -149,6 +156,10 @@ const isShut = ref(false);
 const isRotate = ref(false);
 // 平台筛选文本
 const platformSelectIndex = ref(0);
+// 是否禁用上拉
+const disablePullUp = ref(false);
+// 下拉刷新当前页码
+const currentPage = ref(1);
 // 平台筛选列表
 const platformSelectList = computed(() => {
   const list = [
@@ -202,7 +213,7 @@ const seacrhTopic = () => {
   console.log('搜索', searchValue.value);
   loadConcertByPlatform(
     platformSelectList.value[platformSelectIndex.value].platform,
-    '',
+    currentCity.value.platformCityId,
     searchValue.value
   );
 };
@@ -220,7 +231,10 @@ const sheetActionClick = (e: any) => {
     'list[platformSelectIndex.value].platform',
     platformSelectList.value[platformSelectIndex.value].platform
   );
-  loadConcertByPlatform(platformSelectList.value[platformSelectIndex.value].platform, '');
+  loadConcertByPlatform(
+    platformSelectList.value[platformSelectIndex.value].platform,
+    currentCity.value.platformCityId
+  );
 };
 
 // 输入框输入值
@@ -234,11 +248,17 @@ const seacrhInput = (e: any) => {
 };
 // 获取演唱会数据 默认获取大麦演唱会数据
 async function loadConcertByPlatform(platform: string, cty: string, keyword = '') {
+  if (disablePullUp.value) {
+    return;
+  }
+  disablePullUp.value = true;
+  console.log('disablePullUp.value', disablePullUp.value);
   alConcertByPlatform.value = await getH5AlConcertByPlatform({
     platform,
     cty,
     keyword
   });
+  disablePullUp.value = false;
 }
 // 虚拟列表滚动
 const onChange = (e: any) => {
@@ -261,17 +281,30 @@ onLoad(async () => {
     skeletonShow.value = false;
   }, 2000);
   // 首次加载 获取演唱会数据 默认获取所有数据
-  loadConcertByPlatform('', '');
+  loadConcertByPlatform(platformSelectList.value[platformSelectIndex.value].platform, '852');
   // 获取演唱会数据 默认获取大麦演唱会数据DM
   // alConcertByPlatform.value = await getAlConcertByPlatform({
   //   platform: 'DM',
   //   cty: '北京'
   // });
+  eventBus.on('emitSelectCity', (e: any) => {
+    console.log('emitSelectCity', e);
+    currentCity.value = e;
+    loadConcertByPlatform(
+      platformSelectList.value[platformSelectIndex.value].platform,
+      currentCity.value.platformCityId
+    );
+  });
 });
 // 选择城市
 const selectCity = () => {
   router.push({
-    path: '/pages/home/select-city'
+    path: '/pages/home/select-city',
+    query: {
+      platform: platformSelectList.value[platformSelectIndex.value].platform || 'DM',
+      currentCityId: currentCity.value.platformCityId, // 定位城市北京
+      currentCity: currentCity.value.cityName
+    }
   });
 };
 // 登录

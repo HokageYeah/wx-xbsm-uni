@@ -13,7 +13,7 @@
             <input
               confirm-type="search"
               class="search-bar-input"
-              placeholder="输入城市名称或首字母查询"
+              placeholder="输入城市名称"
               placeholder-class="phcolor"
               :value="inputVal"
               :focus="inputShowed"
@@ -45,7 +45,7 @@
           :hover-stay-time="150"
           @tap="selectCity"
         >
-          <view class="tui-list-cell-navigate">{{ item }}</view>
+          <view class="tui-list-cell-navigate">{{ item.cityName }}</view>
         </view>
       </view>
 
@@ -65,7 +65,7 @@
           <view class="title">热门城市</view>
           <view class="city-names">
             <view
-              v-for="(item, index) in hotCity"
+              v-for="(item, index) in hotCities"
               :key="index"
               class="city-name-item"
               hover-class="tap-city"
@@ -73,7 +73,7 @@
               :data-name="item"
               @tap="selectCity"
             >
-              {{ item }}
+              {{ item.cityName }}
             </view>
           </view>
         </view>
@@ -82,15 +82,15 @@
         <view class="tui-list city-list">
           <template v-for="(list, index) in lists" :key="index">
             <template v-if="list.data[0]">
-              <view :id="index === 0 ? 'suoyin' : list.letter" class="tui-list-cell-divider">
-                {{ list.letter }}
+              <view :id="index === 0 ? 'suoyin' : list.prefix" class="tui-list-cell-divider">
+                {{ list.prefix }}
               </view>
               <view
                 v-for="(item, index2) in list.data"
                 :key="index2"
                 class="tui-list-cell"
                 hover-class="tui-list-cell-hover"
-                :data-name="item.cityName"
+                :data-name="item"
                 :hover-stay-time="150"
                 @tap="selectCity"
               >
@@ -124,20 +124,21 @@
         :style="{ height: `${indexBarItemHeight}px` }"
         @tap="handleClick(index)"
       >
-        {{ index === 0 ? '索引' : items.letter }}
+        {{ index === 0 ? '索引' : items.prefix }}
       </text>
     </view>
 
     <!-- 索引提示 -->
-    <view v-if="touchmove && lists[touchmoveIndex]?.letter" class="tui-indexed-list-alert">
-      {{ lists[touchmoveIndex].letter }}
+    <view v-if="touchmove && lists[touchmoveIndex]?.prefix" class="tui-indexed-list-alert">
+      {{ lists[touchmoveIndex].prefix }}
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
-import cityData from '@/pages/home/hooks/city-data';
+import { ref } from 'vue';
+// import cityData from '@/pages/home/hooks/city-data';
+import { getH5AlConcertCityListByPlatform } from '@/pages/home/hooks/api-hooks';
 
 // 响应式状态
 const lists: any = ref([]);
@@ -150,30 +151,34 @@ const scrollViewId = ref('');
 const winHeight = ref(0);
 const inputShowed = ref(false);
 const inputVal = ref('');
-const searchResult = ref([]);
+const searchResult: any = ref([]);
 const localCity = ref('');
-
+const localCityId = ref('');
 // 热门城市列表
-const hotCity = [
-  '北京',
-  '上海',
-  '广州',
-  '深圳',
-  '杭州',
-  '长沙',
-  '武汉',
-  '厦门',
-  '西安',
-  '昆明',
-  '成都',
-  '重庆'
-];
+const hotCities: any = ref([]);
+const instance = getCurrentInstance();
+const eventBus = instance!.appContext.config.globalProperties.$eventBus;
+const router = useRouter();
 
-// 生命周期钩子
-onMounted(() => {
-  const options = uni.getLaunchOptionsSync().query || {};
-  localCity.value = options.currentCity || '深圳';
-
+onLoad(async (options: any) => {
+  console.log('options', options);
+  // 获取城市列表
+  const res: any = await getH5AlConcertCityListByPlatform({ platform: options.platform });
+  console.log('res----', res);
+  const ret = res.ret[0];
+  if (!ret.includes('SUCCESS')) {
+    uni.showToast({
+      title: '获取城市列表失败',
+      icon: 'none'
+    });
+    return;
+  }
+  const data = res.data;
+  console.log('data', data);
+  localCity.value = options.currentCity || '北京';
+  localCityId.value = options.currentCityId || '852';
+  hotCities.value = data.city_list.hotCities;
+  lists.value = data.city_list.cities;
   setTimeout(() => {
     uni.getSystemInfo({
       success(res) {
@@ -189,7 +194,7 @@ onMounted(() => {
         // #endif
 
         titleHeight.value = uni.upx2px(132);
-        lists.value = cityData.list;
+        // lists.value = cityData.list;
       }
     });
   }, 50);
@@ -209,10 +214,10 @@ const clearInput = () => {
 
 const searchCity = () => {
   const result: any = [];
-  cityData.list.forEach((item1) => {
-    item1.data.forEach((item2) => {
-      if (item2.keyword.includes(inputVal.value.toLocaleUpperCase())) {
-        result.push(item2.cityName);
+  lists.value.forEach((item1: any) => {
+    item1.data.forEach((item2: any) => {
+      if (item2.cityName.includes(inputVal.value.toLocaleUpperCase())) {
+        result.push(item2);
       }
     });
   });
@@ -225,9 +230,11 @@ const inputTyping = (e: any) => {
 };
 
 const selectCity = (e: any) => {
-  const cityName = e.currentTarget.dataset.name;
-  uni.$emit('emit', cityName);
-  uni.navigateBack({ delta: 1 });
+  const cityItem = e.currentTarget.dataset.name;
+  console.log('cityItem', cityItem);
+  eventBus.emit('emitSelectCity', cityItem);
+  router.back();
+  // uni.navigateBack({ delta: 1 });
 };
 
 const touchStart = (e: any) => {
@@ -236,7 +243,7 @@ const touchStart = (e: any) => {
   const index = Math.floor((pageY - titleHeight.value) / indexBarItemHeight.value);
   const item = lists.value[index === 0 ? 1 : index];
   if (item) {
-    scrollViewId.value = item.letter;
+    scrollViewId.value = item.prefix;
     touchmoveIndex.value = index;
   }
 };
@@ -246,7 +253,7 @@ const touchMove = (e: any) => {
   const index = Math.floor((pageY - titleHeight.value) / indexBarItemHeight.value);
   const item = lists.value[index === 0 ? 1 : index];
   if (item) {
-    scrollViewId.value = item.letter;
+    scrollViewId.value = item.prefix;
     touchmoveIndex.value = index;
   }
 };
@@ -265,7 +272,7 @@ const handleClick = (index: any) => {
   if (index === undefined || touchmove.value) return;
   const item: any = lists.value[index];
   if (item) {
-    scrollViewId.value = item.letter;
+    scrollViewId.value = item.prefix;
     touchmoveIndex.value = index;
   }
 };
