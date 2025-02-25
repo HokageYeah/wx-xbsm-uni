@@ -64,8 +64,8 @@
       @scrolltolower="onScrollToLower"
     >
       <tui-virtual-item
-        v-for="(item, index) in alConcertByPlatform?.data?.resultData"
-        :key="index"
+        v-for="item in virtualListResult"
+        :key="item.showid"
         @click="itemClick(item)"
       >
         <tui-list-cell padding="0">
@@ -159,7 +159,9 @@ const platformSelectIndex = ref(0);
 // 是否禁用上拉
 const disablePullUp = ref(false);
 // 下拉刷新当前页码
-const currentPage = ref(1);
+let pageIndex = 1;
+const pageSize = 15;
+const virtualListResult = ref<any>([]);
 // 平台筛选列表
 const platformSelectList = computed(() => {
   const list = [
@@ -252,12 +254,27 @@ async function loadConcertByPlatform(platform: string, cty: string, keyword = ''
     return;
   }
   disablePullUp.value = true;
+  let otherData: any = {};
+  if (pageIndex === 1) {
+    virtualListResult.value = [];
+    otherData = {};
+  } else {
+    otherData.pageIndex = pageIndex;
+    otherData.pageSize = pageSize;
+    otherData.targetSectionId = alConcertByPlatform.value.data.otherData.targetSectionId;
+    otherData.targetLayerId = alConcertByPlatform.value.data.otherData.targetLayerId;
+  }
   console.log('disablePullUp.value', disablePullUp.value);
   alConcertByPlatform.value = await getH5AlConcertByPlatform({
     platform,
     cty,
-    keyword
+    keyword,
+    otherData: JSON.stringify(otherData)
   });
+  if (pageIndex === 1) {
+    skeletonShow.value = false;
+  }
+  virtualListResult.value.push(...alConcertByPlatform.value.data.resultData);
   disablePullUp.value = false;
 }
 // 虚拟列表滚动
@@ -267,6 +284,11 @@ const onChange = (e: any) => {
 // 虚拟列表滚动到底部
 const onScrollToLower = (e: any) => {
   console.log('e', e);
+  pageIndex++;
+  loadConcertByPlatform(
+    platformSelectList.value[platformSelectIndex.value].platform,
+    currentCity.value.platformCityId
+  );
 };
 // 点击演唱会
 const itemClick = (item: any) => {
@@ -276,10 +298,6 @@ const itemClick = (item: any) => {
   });
 };
 onLoad(async () => {
-  // 模拟
-  setTimeout(() => {
-    skeletonShow.value = false;
-  }, 2000);
   // 首次加载 获取演唱会数据 默认获取所有数据
   loadConcertByPlatform(platformSelectList.value[platformSelectIndex.value].platform, '852');
   // 获取演唱会数据 默认获取大麦演唱会数据DM

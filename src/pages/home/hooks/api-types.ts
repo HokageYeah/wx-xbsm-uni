@@ -3,6 +3,7 @@ export interface IAlConcertByPlatformType {
   cty: string; // 城市
   keyword?: string; // 搜索关键字
   ctl?: string; // 地区
+  otherData?: string; // 其他数据
 }
 
 export interface IAlConcertDetailType {
