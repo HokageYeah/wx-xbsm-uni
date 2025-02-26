@@ -308,6 +308,7 @@ onLoad(async () => {
   eventBus.on('emitSelectCity', (e: any) => {
     console.log('emitSelectCity', e);
     currentCity.value = e;
+    pageIndex = 1;
     loadConcertByPlatform(
       platformSelectList.value[platformSelectIndex.value].platform,
       currentCity.value.platformCityId
