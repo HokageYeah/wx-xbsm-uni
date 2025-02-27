@@ -294,7 +294,11 @@ const onScrollToLower = (e: any) => {
 const itemClick = (item: any) => {
   console.log('item', item);
   router.push({
-    path: `/pages/home/concert-detail?id=${item.showid}&platform=${item.platform}`
+    path: `/pages/home/concert-detail`,
+    query: {
+      id: item.showid,
+      platform: item.platform
+    }
   });
 };
 onLoad(async () => {

@@ -67,6 +67,19 @@
           </tui-label>
         </tui-checkbox-group>
       </view>
+      <view class="concert-detail-content-config tui-skeleton-rect">
+        <text class="tui-text">监控持续时间</text>
+        <tui-checkbox-group>
+          <tui-label>
+            <tui-list-cell>
+              <view class="thorui-align__center" @click="handleDeadline">
+                <tui-icon style="margin-right: 8px" name="calendar" :size="16" unit="px"></tui-icon>
+                <tui-text>{{ dateTimeFormat }}</tui-text>
+              </view>
+            </tui-list-cell>
+          </tui-label>
+        </tui-checkbox-group>
+      </view>
     </view>
     <view class="concert-detail-content-sku tui-skeleton-rect">
       <view
@@ -112,6 +125,13 @@
     :preload-data="preloadData"
     background-color="white"
   ></tui-skeleton>
+  <tui-datetime
+    ref="dateTime"
+    :radius="true"
+    :set-date-time="dateTimeFormat"
+    type="7"
+    @confirm="dateTimeChange"
+  ></tui-datetime>
 </template>
 
 <script setup lang="ts">
@@ -126,6 +146,8 @@ const skeletonShow = ref(true);
 const preloadData = ref();
 const submitText = ref('');
 const submitDisabled = ref(true);
+const deadline = ref<any>('');
+const dateTime = ref();
 // #ifdef MP-WEIXIN
 // 在微信中拿不到节点信息，此处手动塞一个默认值
 preloadData.value = [
@@ -219,10 +241,22 @@ preloadData.value = [
   }
 ];
 // #endif
+// 格式化时间
+const dateTimeFormat = computed(() => {
+  console.log('deadline.value---2222', deadline.value);
+  const year = deadline.value.getFullYear();
+  const month = deadline.value.getMonth() + 1;
+  const day = deadline.value.getDate();
+  const hour = deadline.value.getHours();
+  const minute = deadline.value.getMinutes();
+  const second = deadline.value.getSeconds();
+  return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+});
 onLoad(async (options: any) => {
+  console.log('options---', options);
   // 获取演唱会详情
   const res: any = await getH5AlConcertDetail({
-    platform: 'DM',
+    platform: options.platform,
     show_id: options.id
   });
   const retstr = res.ret[0];
@@ -231,7 +265,7 @@ onLoad(async (options: any) => {
   }
   // 获取演唱会票价详情（检测当前场次是否有票）
   let resDetail: any = await getH5AlConcertTicketDetail({
-    platform: 'DM',
+    platform: options.platform,
     show_id: options.id
   });
   if (resDetail.ret[0].includes('SUCCESS')) {
@@ -263,6 +297,13 @@ onLoad(async (options: any) => {
     }
     console.log('perform_skuList', perform_skuList.value);
   }
+  // // 获取当前时间
+  // const now = new Date();
+  // // 获取当前时间后一天
+  // const nextDay = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+  deadline.value = new Date();
+  console.log('deadline.value---', deadline.value);
   setTimeout(() => {
     skeletonShow.value = false;
   }, 1000);
@@ -358,7 +399,8 @@ const handleSubmit = async () => {
     show_id: showDetail.value.showid,
     show_name: showDetail.value.showname,
     // 监控持续时间
-    deadline: '2025-03-18 00:00:00',
+    // deadline: '2025-03-18 00:00:00',
+    deadline: dateTimeFormat.value,
     // 监控的微信id
     wx_token: '111',
     venue_city_name: showDetail.value.venuecity,
@@ -368,6 +410,25 @@ const handleSubmit = async () => {
   };
   const res: any = await recordWebConcertMonitor(handelData);
   console.log('handelData---', res);
+};
+const handleDeadline = () => {
+  dateTime.value && dateTime.value.show();
+};
+const dateTimeChange = (e: any) => {
+  console.log('e---', e);
+  const data = e.result;
+  // 字符串 2025-02-26 23:57:43 转换为时间戳
+  const timestamp = new Date(data);
+  console.log('timestamp---', timestamp);
+  // 判断data 不能小于 deadline.value
+  if (timestamp < new Date()) {
+    uni.showToast({
+      title: '监控时间不能小于当前时间',
+      icon: 'none'
+    });
+  } else {
+    deadline.value = timestamp;
+  }
 };
 </script>
 
@@ -419,7 +480,7 @@ const handleSubmit = async () => {
     padding: 10px 10px 0;
     width: 100%;
     min-height: 40px;
-    background-color: #fff;
+    background-color: red;
     @include normalFlex(row, flex-start, flex-start);
     .tui-text {
       font-size: 13px;
