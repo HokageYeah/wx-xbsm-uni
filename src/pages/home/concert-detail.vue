@@ -378,16 +378,18 @@ const handleSubmit = async () => {
 }
 .concert-detail-header {
   overflow: hidden;
+  box-sizing: border-box;
+  padding: 10px;
   border-radius: 8rpx;
   min-height: 134px;
-  background-color: #f5f5f5;
+  background-color: #fff;
   @include normalFlex(row, flex-start, center);
   .concert-detail-header-box {
     flex: 1;
     margin-left: 10px;
     height: 100%;
     min-height: 134px;
-    background-color: aqua;
+    /* background-color: aqua; */
     &-content {
       margin-top: 5px;
       min-height: 16px;
