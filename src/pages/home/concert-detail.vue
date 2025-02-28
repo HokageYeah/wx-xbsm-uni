@@ -106,7 +106,7 @@
             @click="skuSelectHandle(skuitem)"
             >{{ `${skuitem.priceName} - ￥${skuitem.price}` }}
             <view
-              v-if="skuitem.skuSalable !== 'false'"
+              v-if="skuitem.skuSalable === 'false'"
               class="concert-detail-content-sku-item-sku-item-tag"
               >缺货</view
             >
@@ -402,14 +402,15 @@ const handleSubmit = async () => {
     // deadline: '2025-03-18 00:00:00',
     deadline: dateTimeFormat.value,
     // 监控的微信id
-    wx_token: '111',
+    wx_token: '11',
     venue_city_name: showDetail.value.venuecity,
     venue_name: showDetail.value.venue,
     venue_addr: showDetail.value.venueAddr,
     ticket_perform: allperform_skuList
   };
+  console.log('handelData---', handelData);
   const res: any = await recordWebConcertMonitor(handelData);
-  console.log('handelData---', res);
+  console.log('handelData---res', res);
 };
 const handleDeadline = () => {
   dateTime.value && dateTime.value.show();
@@ -422,6 +423,7 @@ const dateTimeChange = (e: any) => {
   console.log('timestamp---', timestamp);
   // 判断data 不能小于 deadline.value
   if (timestamp < new Date()) {
+    deadline.value = new Date();
     uni.showToast({
       title: '监控时间不能小于当前时间',
       icon: 'none'
