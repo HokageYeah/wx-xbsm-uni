@@ -1,4 +1,8 @@
 import ajax from '@/uni-module-common/http';
+const userInfo = ref({
+  nickName: '',
+  avatarUrl: ''
+});
 export class wxAuthorizLogin {
   static wxGetUserInfo = (desc: string) => {
     uni.showModal({
@@ -29,6 +33,39 @@ export class wxAuthorizLogin {
           icon: 'none'
         });
       }
+    });
+  };
+
+  static useWXProfile = () => {
+    return new Promise<void>((resolve, reject) => {
+      uni.getUserProfile({
+        desc: '用于完善个人信息',
+        // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
+        success: (res) => {
+          if (res.userInfo) {
+            Object.assign(userInfo.value, {
+              nickName: res.userInfo.nickName,
+              avatarUrl: res.userInfo.avatarUrl
+            });
+            console.log('getUserProfile----', userInfo.value);
+            resolve();
+          } else {
+            reject(new Error('用户信息异常'));
+            uni.showToast({
+              title: '用户信息异常',
+              icon: 'none'
+            });
+          }
+        },
+        fail(e) {
+          console.log(e);
+          reject(e.message);
+          uni.showToast({
+            title: '请授权用户头像',
+            icon: 'none'
+          });
+        }
+      });
     });
   };
 
@@ -65,7 +102,7 @@ export class wxAuthorizLogin {
           console.log('wxLogin-success-', res);
           try {
             const result: any = await ajax({
-              url,
+              url: `${url}?platform=WX_MINI`,
               method,
               data: {
                 code: res.code,

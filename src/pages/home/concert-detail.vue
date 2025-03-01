@@ -132,6 +132,14 @@
     type="7"
     @confirm="dateTimeChange"
   ></tui-datetime>
+  <tui-modal
+    :show="showLoginModal"
+    title="提示"
+    :button="loginArray"
+    content="您还未登录，请先登录"
+    @click="loginHandleClick"
+    @cancel="showLoginModal = false"
+  ></tui-modal>
 </template>
 
 <script setup lang="ts">
@@ -140,6 +148,7 @@ import {
   getH5AlConcertTicketDetail,
   recordWebConcertMonitor
 } from './hooks/api-hooks';
+import { wxAuthorizLogin } from '@/uni-module-common/utils/wxAuthorizedLogin';
 const showDetail = ref<any>(null);
 const perform_skuList = ref<any>([]);
 const skeletonShow = ref(true);
@@ -148,6 +157,19 @@ const submitText = ref('');
 const submitDisabled = ref(true);
 const deadline = ref<any>('');
 const dateTime = ref();
+const { isLogin, userInfo } = useStore('user');
+const showLoginModal = ref(false);
+const loginArray = ref([
+  {
+    text: '取消',
+    type: 'gray'
+  },
+  {
+    text: '确定',
+    type: 'green',
+    plain: false
+  }
+]);
 // #ifdef MP-WEIXIN
 // 在微信中拿不到节点信息，此处手动塞一个默认值
 preloadData.value = [
@@ -375,7 +397,28 @@ const performChecked = (item: any) => {
   item.checked = !item.skuList.some((skuitem: any) => !skuitem.checked);
   return item.checked;
 };
+// 点击去登录
+const loginHandleClick = async () => {
+  // showLoginModal.value = false;
+  // 获取微信用户信息
+  await wxAuthorizLogin.useWXProfile();
+  // 调用用户登录
+  try {
+    const { content, code } = (await wxAuthorizLogin.wxLogin(
+      '/api/v1/wx/mini.login.by.code',
+      'POST',
+      'XBSM'
+    )) as any;
+  } catch (error) {
+    console.log('error---', error);
+  }
+};
 const handleSubmit = async () => {
+  // 判断用户是否登录
+  if (!isLogin.value) {
+    showLoginModal.value = true;
+    return;
+  }
   const perform_skuList_select = perform_skuList.value.filter((item: any) => {
     return item.skuList.some((skuitem: any) => skuitem.checked);
   });
