@@ -274,7 +274,7 @@ async function loadConcertByPlatform(platform: string, cty: string, keyword = ''
   if (pageIndex === 1) {
     skeletonShow.value = false;
   }
-  virtualListResult.value.push(...alConcertByPlatform.value.data.resultData);
+  virtualListResult.value.push(...alConcertByPlatform.value.resultData);
   disablePullUp.value = false;
 }
 // 虚拟列表滚动

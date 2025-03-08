@@ -6,7 +6,6 @@ import {
   clearJingMoLoginInfo,
   dealLoginSuccessResponse,
   getHttpUserMore,
-  getLoginUserInfo,
   loginByWxApplet
 } from '@/uni-module-common/hooks/useLoginHooks';
 import { variableTypeDetection } from '@/uni-module-common/utils/verifyType';
@@ -220,21 +219,23 @@ const user = defineStore({
     async setToken(token = '', userMessage: any = {}, userAgent = '', clientInfo: any = {}) {
       console.log('setToken----查看--', token);
       this.useToken = token;
+      this.isLogin = true;
+      uni.setStorageSync('token', token);
       // if (token === '') {
-      if (!isLoginFunc(token)) {
-        this.isLogin = false;
-        uni.removeStorageSync('token');
-      } else {
-        this.isLogin = true;
-        uni.setStorageSync('token', token);
-        // #ifdef APP-PLUS || APP
-        console.log('setToken----APP-PlUS---', token);
-        // 请求接口获取用户信息
-        const res: any = await getLoginUserInfo();
-        this.loginAfter(this.getClientInfo({ ...userMessage, ...res }), userAgent, clientInfo);
-        // this.loginAfter(this.getClientInfo(userMessage), userAgent, clientInfo);
-        // #endif
-      }
+      // if (!isLoginFunc(token)) {
+      //   this.isLogin = false;
+      //   uni.removeStorageSync('token');
+      // } else {
+      //   this.isLogin = true;
+      //   uni.setStorageSync('token', token);
+      //   // #ifdef APP-PLUS || APP
+      //   console.log('setToken----APP-PlUS---', token);
+      //   // 请求接口获取用户信息
+      //   const res: any = await getLoginUserInfo();
+      //   this.loginAfter(this.getClientInfo({ ...userMessage, ...res }), userAgent, clientInfo);
+      //   // this.loginAfter(this.getClientInfo(userMessage), userAgent, clientInfo);
+      //   // #endif
+      // }
       return this.isLogin;
     },
     // 设置用户身份列表
@@ -348,6 +349,7 @@ const user = defineStore({
           xinzxUserId: getV('xinzxUserId', true) // 新增新平台用户id，用来班级圈引导页的展示判断，此id在同一个身份下是相同的
         };
         this.userInfo = userinfo;
+        uni.setStorageSync('userInfo', JSON.stringify(userinfo));
         console.log('get-user-info-by-login------userInfo', this.userInfo);
         return Promise.resolve();
       }

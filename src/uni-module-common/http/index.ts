@@ -406,6 +406,18 @@ instance.interceptors.response.use(
       console.log('getTaskDetail---Promise----', res);
       return Promise.reject(res);
     }
+    // 判断ret中 ["SUCCESS::调用成功"] 是否有SUCCESS
+    if (res.ret && !res.ret[0].includes('SUCCESS')) {
+      const errormsg = res.ret[0].split('::')[1];
+      uni.showToast({
+        title: errormsg || '请求接口时发生异常，请稍后再试',
+        duration: 3000,
+        icon: 'none',
+        mask: true
+      });
+      const error = new Error(errormsg || 'Error');
+      return Promise.reject(error);
+    }
     if (
       response.data.error === 0 &&
       response.data.msg !== '' &&
@@ -428,6 +440,10 @@ instance.interceptors.response.use(
     console.log('response-----token---', token);
     isLoginFunc(response.cookies) && uni.setStorageSync('requestCookies', response.cookies);
     // #endif
+    // 判断response.data 中是否还有data字段，如果有则返回data字段，如果没有则返回response.data
+    if (response.data.data) {
+      return Promise.resolve(response.data.data);
+    }
     return Promise.resolve(response.data);
   },
   (error) => {

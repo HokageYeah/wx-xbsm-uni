@@ -132,14 +132,7 @@
     type="7"
     @confirm="dateTimeChange"
   ></tui-datetime>
-  <tui-modal
-    :show="showLoginModal"
-    title="提示"
-    :button="loginArray"
-    content="您还未登录，请先登录"
-    @click="loginHandleClick"
-    @cancel="showLoginModal = false"
-  ></tui-modal>
+  <loginModals v-model:showLoginModal="showLoginModal" />
 </template>
 
 <script setup lang="ts">
@@ -148,7 +141,9 @@ import {
   getH5AlConcertTicketDetail,
   recordWebConcertMonitor
 } from './hooks/api-hooks';
-import { wxAuthorizLogin } from '@/uni-module-common/utils/wxAuthorizedLogin';
+import loginModals from '@/pages/components/login-modals.vue';
+import { uniShowToast } from '@/uni-module-common/utils/uiUtile';
+import { SubscribeWXTemplateAPI } from '@/uni-module-common/hooks/useSubscription';
 const showDetail = ref<any>(null);
 const perform_skuList = ref<any>([]);
 const skeletonShow = ref(true);
@@ -159,17 +154,6 @@ const deadline = ref<any>('');
 const dateTime = ref();
 const { isLogin, userInfo } = useStore('user');
 const showLoginModal = ref(false);
-const loginArray = ref([
-  {
-    text: '取消',
-    type: 'gray'
-  },
-  {
-    text: '确定',
-    type: 'green',
-    plain: false
-  }
-]);
 // #ifdef MP-WEIXIN
 // 在微信中拿不到节点信息，此处手动塞一个默认值
 preloadData.value = [
@@ -281,44 +265,40 @@ onLoad(async (options: any) => {
     platform: options.platform,
     show_id: options.id
   });
-  const retstr = res.ret[0];
-  if (retstr.includes('SUCCESS')) {
-    showDetail.value = res.data.legacy;
-  }
+  showDetail.value = res.legacy;
+
   // 获取演唱会票价详情（检测当前场次是否有票）
   let resDetail: any = await getH5AlConcertTicketDetail({
     platform: options.platform,
     show_id: options.id
   });
-  if (resDetail.ret[0].includes('SUCCESS')) {
-    let performViews_true = resDetail.data.result.performViews.filter(
+  let performViews_true = resDetail.result.performViews.filter(
+    (item: any) => item.checked === 'true'
+  );
+  resDetail.result.skuList.forEach((skuitem: any) => {
+    skuitem.checked = true;
+  });
+  performViews_true[0].skuList = resDetail.result.skuList;
+  perform_skuList.value.push(performViews_true[0]);
+  const performViews_false = resDetail.result.performViews.filter(
+    (item: any) => item.checked === 'false'
+  );
+  for (const item of performViews_false) {
+    resDetail = await getH5AlConcertTicketDetail({
+      platform: 'DM',
+      show_id: options.id,
+      session_id: item.performId
+    });
+    performViews_true = resDetail.result.performViews.filter(
       (item: any) => item.checked === 'true'
     );
-    resDetail.data.result.skuList.forEach((skuitem: any) => {
+    resDetail.result.skuList.forEach((skuitem: any) => {
       skuitem.checked = true;
     });
-    performViews_true[0].skuList = resDetail.data.result.skuList;
+    performViews_true[0].skuList = resDetail.result.skuList;
     perform_skuList.value.push(performViews_true[0]);
-    const performViews_false = resDetail.data.result.performViews.filter(
-      (item: any) => item.checked === 'false'
-    );
-    for (const item of performViews_false) {
-      resDetail = await getH5AlConcertTicketDetail({
-        platform: 'DM',
-        show_id: options.id,
-        session_id: item.performId
-      });
-      performViews_true = resDetail.data.result.performViews.filter(
-        (item: any) => item.checked === 'true'
-      );
-      resDetail.data.result.skuList.forEach((skuitem: any) => {
-        skuitem.checked = true;
-      });
-      performViews_true[0].skuList = resDetail.data.result.skuList;
-      perform_skuList.value.push(performViews_true[0]);
-    }
-    console.log('perform_skuList', perform_skuList.value);
   }
+  console.log('perform_skuList', perform_skuList.value);
   // // 获取当前时间
   // const now = new Date();
   // // 获取当前时间后一天
@@ -397,26 +377,15 @@ const performChecked = (item: any) => {
   item.checked = !item.skuList.some((skuitem: any) => !skuitem.checked);
   return item.checked;
 };
-// 点击去登录
-const loginHandleClick = async () => {
-  // showLoginModal.value = false;
-  // 获取微信用户信息
-  await wxAuthorizLogin.useWXProfile();
-  // 调用用户登录
-  try {
-    const { content, code } = (await wxAuthorizLogin.wxLogin(
-      '/api/v1/wx/mini.login.by.code',
-      'POST',
-      'XBSM'
-    )) as any;
-  } catch (error) {
-    console.log('error---', error);
-  }
-};
 const handleSubmit = async () => {
   // 判断用户是否登录
   if (!isLogin.value) {
     showLoginModal.value = true;
+    return;
+  } else {
+    uniShowToast('已登录');
+    // 订阅微信订阅
+    SubscribeWXTemplateAPI('XBSM', '/wx/mini.send.subscribe.message');
     return;
   }
   const perform_skuList_select = perform_skuList.value.filter((item: any) => {

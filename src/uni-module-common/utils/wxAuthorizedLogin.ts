@@ -107,6 +107,9 @@ export class wxAuthorizLogin {
               data: {
                 code: res.code,
                 entry
+              },
+              custom: {
+                showLoading: true
               }
             });
             resolve({ ...result, code: res.code });

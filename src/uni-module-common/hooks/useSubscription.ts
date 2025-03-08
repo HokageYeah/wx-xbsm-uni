@@ -117,12 +117,14 @@ export const SubscribeWXTemplate = (params: any, url: string) => {
 export const SubscribeWXTemplateCallBack = (entry: string, url: string) => {
   return async (data: any) => {
     data.errMsg && delete data.errMsg;
+    console.log('SubscribeWXTemplateCallBack--data', data);
     const templateList = Object.entries(data).map(([k, v]) => {
       return {
         templateId: k,
         subscribeStatus: v
       };
     });
+    console.log('SubscribeWXTemplateCallBack--templateList', templateList);
     const params = {
       templateList,
       entry
