@@ -281,7 +281,9 @@ instance.interceptors.request.use(
       // 添加小程序端请求头标识
       config.header = {
         ...setWXLoginCookie(token, config.header),
-        'source-client': 'miniapp'
+        'source-client': 'miniapp',
+        // jwt鉴权
+        Authorization: token
       };
       console.log('setWXLoginCookie---config.header--after---', config.header);
       // #endif
