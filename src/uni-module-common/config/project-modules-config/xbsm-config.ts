@@ -117,9 +117,9 @@ const projectConfig = {
   // 微信订阅模板id
   wxSubscribeTemplIds: {
     // 数智慧家校微信订阅老师模板id
-    teacherSubscribeTemplIds: ['nEEz30E2jlVOw9H_2dO6hRnCqW-eRXUWnigyvoYjqng'],
+    teacherSubscribeTemplIds: ['YcOF2JL-yxU5rHL3oAhZq_srkY5epENXsMqgYbXNJiU'],
     // 数智慧家校微信订阅学生模板id
-    studentSubscribeTemplIds: ['nEEz30E2jlVOw9H_2dO6hRnCqW-eRXUWnigyvoYjqng']
+    studentSubscribeTemplIds: ['YcOF2JL-yxU5rHL3oAhZq_srkY5epENXsMqgYbXNJiU']
   },
   // store中appConfig的默认配置，每个小程序的tabbar不一样所以单独配置
   defalutAppConfig,
