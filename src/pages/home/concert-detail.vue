@@ -385,7 +385,7 @@ const handleSubmit = async () => {
   } else {
     uniShowToast('已登录');
     // 订阅微信订阅
-    SubscribeWXTemplateAPI('XBSM', '/api/v1/wx/mini.send.subscribe.message');
+    SubscribeWXTemplateAPI('XBSM', '/api/v1/wx/mini.save.subscribe.template');
     return;
   }
   const perform_skuList_select = perform_skuList.value.filter((item: any) => {
