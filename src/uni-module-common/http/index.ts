@@ -274,7 +274,7 @@ instance.interceptors.request.use(
       // 下面方法设置setUserAgent iOS可以 安卓设置失败
       // plus.navigator.setUserAgent(`hostId:${userAgent.value.hostId}`);
       // #endif
-      // #ifdef MP-WEIXIN
+      // #ifdef MP-WEIXIN || H5
       // 微信端的cookie，则是登录后自己保存的，有超时时间，需要自己取出来
       console.log('setWXLoginCookie---config.header--before---', config.header);
       console.log('setWXLoginCookie---config---', config);

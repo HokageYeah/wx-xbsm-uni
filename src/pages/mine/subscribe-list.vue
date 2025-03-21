@@ -10,11 +10,6 @@
           :text="platformSelectList[platformSelectIndex].text"
         ></tui-text>
       </view>
-      <!-- 选择城市 -->
-      <view class="select-city" @click="selectCity">
-        <view class="select-city-text-triangle"></view>
-        <tui-text size="26" color="#222222" :text="currentCity.cityName"></tui-text>
-      </view>
       <!-- 搜索框 -->
       <view class="search-view-box-right">
         <tui-input
@@ -56,18 +51,14 @@
       </view>
     </view>
     <tui-virtual-list
-      v-if="!skeletonShow"
+      v-if="!skeletonShow && subScribeList.length > 0"
       ref="virtualList"
       :item-buffer="15"
       background="#fff"
       @change="onChange"
       @scrolltolower="onScrollToLower"
     >
-      <tui-virtual-item
-        v-for="item in virtualListResult"
-        :key="item.showid"
-        @click="itemClick(item)"
-      >
+      <tui-virtual-item v-for="item in subScribeList" :key="item.showid" @click="itemClick(item)">
         <tui-list-cell padding="0">
           <view class="tui-list__item">
             <tui-lazyload-img
@@ -75,53 +66,52 @@
               width="168rpx"
               height="268rpx"
               radius="8rpx"
-              :src="item.verticalPic"
+              :src="item.cover_url"
             ></tui-lazyload-img>
             <view class="tui-label_box">
               <tui-overflow-hidden :line-clamp="2" bold :size="28">
-                {{ item.showname }}
+                {{ item.show_name }}
               </tui-overflow-hidden>
               <view class="tui-label_box-content tui-skeleton-rect">
-                <tui-icon name="time" :size="16"></tui-icon>
-                {{ item.showtime }}
-              </view>
-              <view class="tui-label_box-content tui-skeleton-rect">
                 <tui-icon name="location" :size="16"></tui-icon>
-                {{ `${item.venuecity}-${item.venue}` }}
-              </view>
-              <view v-if="item.description" class="tui-label_box-content tui-skeleton-rect">
-                <tui-icon name="people" :size="16"></tui-icon>
-                <view class="tui-label_box-content-description">
-                  <tui-overflow-hidden :line-clamp="2" size="25">
-                    {{ item.description }}
-                  </tui-overflow-hidden>
-                </view>
-              </view>
-              <view class="tui-label_box-content tui-skeleton-rect">
-                {{ `票价: ￥${item.price_str}` }}
-              </view>
-              <view class="tui-label_box-content tui-skeleton-rect">
-                {{ `状态: ${item.showstatus}` }}
+                {{ `${item.venue_name}-${item.venue_city_name}` }}
               </view>
               <view class="tui-label_box-content tui-skeleton-rect">
                 <tui-text size="26" color="#222222" text="平台:"></tui-text>
                 <tui-text
                   size="26"
                   color="#4ad975"
-                  :text="getPlatformStr(item.platform)"
+                  :text="getPlatformStr(platformSelectList[platformSelectIndex].platform)"
                 ></tui-text>
+              </view>
+              <view class="tui-label_box-content tui-skeleton-rect">
+                共订阅
+                <span style="margin-left: 5px; font-weight: bold; color: #4ad975">{{
+                  item.performances.length
+                }}</span>
+                场
+                <span style="margin: 0 5px; font-weight: bold; color: #4ad975">{{
+                  item.performances.reduce(
+                    (total: number, performance: any) => total + performance.tickets.length,
+                    0
+                  )
+                }}</span>
+                价格
+              </view>
+              <view class="tui-label_box-content tui-skeleton-rect">
+                <tui-text size="26" color="#222222" text="状态:"></tui-text>
+                <tui-text size="26" color="#4ad975" text="已订阅"></tui-text>
               </view>
             </view>
           </view>
         </tui-list-cell>
       </tui-virtual-item>
     </tui-virtual-list>
-    <!-- <image class="logo tui-skeleton-rect" src="/static/logo.png" />
-    <view class="text-area tui-skeleton-rect">
-      <text class="title tui-skeleton-rect">{{ title }}</text>
-      <text class="title tui-skeleton-rect">演出首页</text>
-      <button class="login-btn" @click="login">登录</button>
-    </view> -->
+    <xxt-empty
+      v-if="!skeletonShow && subScribeList.length < 1"
+      tip-image="/static/images/mine/empty.png"
+      tip-message="暂无订阅"
+    />
   </view>
   <xxt-skeleton :skeleton-show="skeletonShow" :is-list="true"></xxt-skeleton>
   <tui-actionsheet
@@ -136,32 +126,22 @@
 </template>
 
 <script setup lang="ts">
-import { getH5AlConcertByPlatform } from './hooks/api-hooks';
-const title = ref('Hello');
+import { getUserSubscribeList } from './api/mine-api';
+const subScribeList = ref<any>([]);
 const skeletonShow = ref(true);
-const instance = getCurrentInstance();
-const alConcertByPlatform = ref<any>(null);
-const router = useRouter();
-const eventBus = instance!.appContext.config.globalProperties.$eventBus;
-const currentCity = ref({
-  cityId: '110100',
-  cityName: '北京',
-  platformCityId: '852'
-});
-// 输入框输入值
-const searchValue = ref('');
-// 是否显示关闭按钮
-const isShut = ref(false);
 // 是否旋转
 const isRotate = ref(false);
 // 平台筛选文本
 const platformSelectIndex = ref(0);
-// 是否禁用上拉
-const disablePullUp = ref(false);
 // 下拉刷新当前页码
 let pageIndex = 1;
-const pageSize = 15;
-const virtualListResult = ref<any>([]);
+const pageSize = 10;
+// 是否禁用上拉
+const disablePullUp = ref(false);
+// 输入框输入值
+const searchValue = ref('');
+// 是否显示关闭按钮
+const isShut = ref(false);
 // 平台筛选列表
 const platformSelectList = computed(() => {
   const list = [
@@ -192,34 +172,6 @@ const getPlatformStr = (platform: string) => {
   };
   return platformList[platform as keyof typeof platformList];
 };
-// #ifdef MP-WEIXIN
-watch(isRotate, (newVal) => {
-  console.log('newVal', newVal);
-  if (newVal) {
-    uni.hideTabBar();
-  } else {
-    setTimeout(() => {
-      uni.showTabBar();
-    }, 200);
-  }
-});
-// #endif
-// 清空搜索内容
-const shutChange = () => {
-  isShut.value = false;
-  searchValue.value = '';
-};
-
-// 搜索
-const seacrhTopic = () => {
-  console.log('搜索', searchValue.value);
-  loadConcertByPlatform(
-    platformSelectList.value[platformSelectIndex.value].platform,
-    currentCity.value.platformCityId,
-    searchValue.value
-  );
-};
-
 // 平台筛选
 const platformSelect = () => {
   isRotate.value = !isRotate.value;
@@ -233,12 +185,17 @@ const sheetActionClick = (e: any) => {
     'list[platformSelectIndex.value].platform',
     platformSelectList.value[platformSelectIndex.value].platform
   );
-  loadConcertByPlatform(
-    platformSelectList.value[platformSelectIndex.value].platform,
-    currentCity.value.platformCityId
-  );
+  loadConcertByPlatform(platformSelectList.value[platformSelectIndex.value].platform);
 };
-
+// 清空搜索内容
+const shutChange = () => {
+  isShut.value = false;
+  searchValue.value = '';
+};
+// 搜索
+const seacrhTopic = () => {
+  console.log('本地搜索', searchValue.value);
+};
 // 输入框输入值
 const seacrhInput = (e: any) => {
   searchValue.value = e;
@@ -248,110 +205,43 @@ const seacrhInput = (e: any) => {
     isShut.value = false;
   }
 };
-// 获取演唱会数据 默认获取大麦演唱会数据
-async function loadConcertByPlatform(platform: string, cty: string, keyword = '') {
-  if (disablePullUp.value) {
-    return;
-  }
-  disablePullUp.value = true;
-  let otherData: any = {};
-  if (pageIndex === 1) {
-    virtualListResult.value = [];
-    otherData = {};
-  } else {
-    otherData.pageIndex = pageIndex;
-    otherData.pageSize = pageSize;
-    otherData.targetSectionId = alConcertByPlatform.value.otherData.targetSectionId;
-    otherData.targetLayerId = alConcertByPlatform.value.otherData.targetLayerId;
-  }
-  console.log('disablePullUp.value', disablePullUp.value);
-  alConcertByPlatform.value = await getH5AlConcertByPlatform({
-    platform,
-    cty,
-    keyword,
-    otherData: JSON.stringify(otherData)
-  });
-  if (pageIndex === 1) {
-    skeletonShow.value = false;
-  }
-  virtualListResult.value.push(...alConcertByPlatform.value.resultData);
-  disablePullUp.value = false;
-}
+// 点击订阅列表
+const itemClick = (item: any) => {
+  console.log('检测订阅列表', item);
+};
 // 虚拟列表滚动
 const onChange = (e: any) => {
   console.log('e', e);
 };
+async function loadConcertByPlatform(platform: string) {
+  if (disablePullUp.value) {
+    return;
+  }
+  disablePullUp.value = true;
+  if (pageIndex === 1) {
+    subScribeList.value = [];
+  }
+  const res: any = await getUserSubscribeList({
+    page: pageIndex,
+    pageSize,
+    platform
+  });
+  if (pageIndex === 1) {
+    skeletonShow.value = false;
+  }
+  console.log('getUserSubscribeList------res------', res);
+  subScribeList.value.push(...res);
+  disablePullUp.value = false;
+}
 // 虚拟列表滚动到底部
 const onScrollToLower = (e: any) => {
   console.log('e', e);
   pageIndex++;
-  loadConcertByPlatform(
-    platformSelectList.value[platformSelectIndex.value].platform,
-    currentCity.value.platformCityId
-  );
+  loadConcertByPlatform(platformSelectList.value[platformSelectIndex.value].platform);
 };
-// 点击演唱会
-const itemClick = (item: any) => {
-  console.log('item', item);
-  router.push({
-    path: `/pages/home/concert-detail`,
-    query: {
-      id: item.showid,
-      platform: item.platform
-    }
-  });
-};
-onLoad(async () => {
-  // 首次加载 获取演唱会数据 默认获取所有数据
-  loadConcertByPlatform(platformSelectList.value[platformSelectIndex.value].platform, '852');
-  // 获取演唱会数据 默认获取大麦演唱会数据DM
-  // alConcertByPlatform.value = await getAlConcertByPlatform({
-  //   platform: 'DM',
-  //   cty: '北京'
-  // });
-  eventBus.on('emitSelectCity', (e: any) => {
-    console.log('emitSelectCity', e);
-    currentCity.value = e;
-    pageIndex = 1;
-    loadConcertByPlatform(
-      platformSelectList.value[platformSelectIndex.value].platform,
-      currentCity.value.platformCityId
-    );
-  });
+onLoad(() => {
+  loadConcertByPlatform(platformSelectList.value[platformSelectIndex.value].platform);
 });
-// 选择城市
-const selectCity = () => {
-  router.push({
-    path: '/pages/home/select-city',
-    query: {
-      platform: platformSelectList.value[platformSelectIndex.value].platform || 'DM',
-      currentCityId: currentCity.value.platformCityId, // 定位城市北京
-      currentCity: currentCity.value.cityName
-    }
-  });
-};
-// 登录
-const login = () => {
-  router.push({
-    path: `/pages/home/concert-detail?id=${1}`
-  });
-  console.log('login----');
-  instance?.proxy
-    ?.$uniAjax({
-      url: '/api/v1/wx/mini.login.by.code',
-      data: { code: 'wx_code123456' },
-      method: 'POST',
-      custom: {
-        auth: false
-      }
-      // header: {
-      //   'custom-header': 'hello' // 自定义请求头信息
-      // }
-    })
-    .then((res: any) => {
-      console.log('res', res);
-    });
-};
 </script>
 
 <style scoped lang="scss">
@@ -373,8 +263,7 @@ const login = () => {
   .search-view-box-right :deep(.tui-input__border-bottom) {
     border-bottom: none !important;
   }
-  .platform-select,
-  .select-city {
+  .platform-select {
     @include normalFlex(row, space-between, center);
     // 不放大也不缩小
     // platform-select 和 select-city 的宽度一样
@@ -426,28 +315,5 @@ const login = () => {
       }
     }
   }
-}
-
-// 以下是测试用的
-.logo {
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 100px;
-  width: 100px;
-  height: 100px;
-}
-.text-area {
-  margin-top: 10px;
-  @include normalFlex(column, flex-start, center);
-}
-.title {
-  font-size: 18px;
-  color: #8f8f94;
-}
-.login-btn {
-  margin-top: 10px;
-  width: 100px;
-  background-color: #4ad975;
-  color: #fff;
 }
 </style>

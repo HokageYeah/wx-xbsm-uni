@@ -221,6 +221,9 @@ const user = defineStore({
       this.useToken = token;
       this.isLogin = true;
       uni.setStorageSync('token', token);
+      if (token === '') {
+        this.isLogin = false;
+      }
       // if (token === '') {
       // if (!isLoginFunc(token)) {
       //   this.isLogin = false;

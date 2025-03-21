@@ -7,8 +7,16 @@ import { uniToNatLifeCycle } from '@/uni-module-common/utils/uniToNavProtocol';
 import bridge from '@/uni-module-common/utils/uniToNativeBridge';
 import { appModuleConfig, mode } from '@/uni-module-common/config';
 console.log('app.vue-----appModuleConfig-----', appModuleConfig);
-const { setUserInfoAttr, getInfo, setClientInfo, setUserAgent, resetUserData, initStoreData } =
-  useStore('user');
+// todo 先设置登录，方便测试
+const {
+  setUserInfoAttr,
+  getInfo,
+  setClientInfo,
+  setUserAgent,
+  resetUserData,
+  initStoreData,
+  setToken
+} = useStore('user');
 const { initStoreAppData } = useStore('appConfig');
 let isAppLogin = false;
 const instance = getCurrentInstance();
@@ -94,6 +102,12 @@ onShow((_options) => {
     } else {
       // 未登录时
       resetUserData();
+      // #ifdef H5
+      // todo 测试用的需要删除掉
+      setToken(
+        'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJfYjhkNWFhZDItZmU0Ni00OTExLWE4MDItZWIyYzYyZTNlMWY3IiwicGFzc3dvcmQiOiJwYXNzd29yZF81OGE2Y2RkMy0zNDZlLTQ1N2YtYThkYS1kNjU3NDgxNmFjZDciLCJ1c2VyX2lkIjoxLCJvcGVuaWQiOiJvQVlKczVXcUtPSDVWdUlGdWx2V3k5TnA3UUpFIiwic3RhdHVzIjoxLCJ1c2VyX2F2YXRhcl9waWMiOm51bGwsInVzZXJfYWRkcmVzcyI6bnVsbCwidXNlcl9yb2xlIjoxLCJleHAiOjE3NDI1NjY0Nzd9.n7sgB5dQPgzlPdx4KJGOgE1KXocWq5MNdRFo0ogrb9T9RKBKigx37xrH3nh9XCbBbfjgPmI9BY5Kh38mm4yK7kN56x5rcPraER_hk3jtd9poWqd9OcR5G9cZretOZm3gi71oXcMWeZEM-RdOoVzfPVUBNjw6n9l4Jh3uJAtJrE9o1eRIq6QZ3GpI0t407_EPN9hdDHxqi8zhZ7_MowhiCL63HYqORIKkJjvjwDAd7iUomtCa3kAOY6neI8gPJbJccB78nM8WO2wdrvE1QNdmaDnQQiIh3Mxbev4unwovH5m94TgPObAUTGN_PzX0pHf8rmyIubl5Lv3HkeLbLTxuHg'
+      );
+      // #endif
     }
   }
   // #endif
