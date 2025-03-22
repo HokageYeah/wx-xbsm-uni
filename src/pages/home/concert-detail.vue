@@ -310,6 +310,11 @@ onLoad(async (options: any) => {
     skeletonShow.value = false;
   }, 1000);
   console.log('showDetail', showDetail.value);
+
+  uni.$on('subscribeWXTemplate', (res: any) => {
+    console.log('subscribeWXTemplate---', res);
+    recordWebConcert();
+  });
 });
 
 watch(
@@ -377,17 +382,18 @@ const performChecked = (item: any) => {
   item.checked = !item.skuList.some((skuitem: any) => !skuitem.checked);
   return item.checked;
 };
-const handleSubmit = async () => {
+const handleSubmit = () => {
   // 判断用户是否登录
   if (!isLogin.value) {
     showLoginModal.value = true;
-    return;
   } else {
     uniShowToast('已登录');
     // 订阅微信订阅
     SubscribeWXTemplateAPI('XBSM', '/api/v1/wx/mini.save.subscribe.template');
-    return;
+    // return;
   }
+};
+async function recordWebConcert() {
   const perform_skuList_select = perform_skuList.value.filter((item: any) => {
     return item.skuList.some((skuitem: any) => skuitem.checked);
   });
@@ -414,7 +420,7 @@ const handleSubmit = async () => {
     // deadline: '2025-03-18 00:00:00',
     deadline: dateTimeFormat.value,
     // 监控的微信id
-    wx_token: '11',
+    cover_url: showDetail.value.verticalPic,
     venue_city_name: showDetail.value.venuecity,
     venue_name: showDetail.value.venue,
     venue_addr: showDetail.value.venueAddr,
@@ -423,7 +429,7 @@ const handleSubmit = async () => {
   console.log('handelData---', handelData);
   const res: any = await recordWebConcertMonitor(handelData);
   console.log('handelData---res', res);
-};
+}
 const handleDeadline = () => {
   dateTime.value && dateTime.value.show();
 };

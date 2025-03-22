@@ -133,9 +133,10 @@ export const SubscribeWXTemplateCallBack = (entry: string, url: string) => {
     console.log('查看订阅数据-params--', params);
     const result: any = await SubscribeWXTemplate(params, url);
     uni.showToast({
-      title: result.message,
+      title: result.message || '订阅成功',
       icon: 'none'
     });
+    uni.$emit('subscribeWXTemplate', result);
     console.log('查看订阅数据-result--', result);
   };
 };

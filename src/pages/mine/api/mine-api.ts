@@ -1,4 +1,4 @@
-import type { UserSubscribeListType } from './api-types';
+import type { DeleteUserSubscribeMonitorType, UserSubscribeListType } from './api-types';
 import ajax from '@/uni-module-common/http';
 
 /**
@@ -7,6 +7,20 @@ import ajax from '@/uni-module-common/http';
 export function getUserSubscribeList(data: UserSubscribeListType) {
   return ajax({
     url: '/api/v1/wx/mini.get.user.subscribe.monitor.list',
+    method: 'POST',
+    data,
+    custom: {
+      showLoading: true
+    }
+  });
+}
+
+/**
+ *  获取用户订阅监控列表
+ */
+export function deleteUserSubscribeMonitor(data: DeleteUserSubscribeMonitorType) {
+  return ajax({
+    url: '/api/v1/wx/mini.delete.user.subscribe.monitor',
     method: 'POST',
     data,
     custom: {

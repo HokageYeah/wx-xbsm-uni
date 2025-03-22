@@ -16,7 +16,7 @@ export interface IRecordWebConcertMonitorType {
   show_id: string; // 演唱会id
   show_name: string; // 演唱会名称
   deadline: string; // 监控持续时间
-  wx_token: string; // 监控的微信id
+  cover_url: string; // 封面图片
   venue_city_name: string; // 场馆城市
   venue_name: string; // 场馆名称
   venue_addr: string; // 场馆地址

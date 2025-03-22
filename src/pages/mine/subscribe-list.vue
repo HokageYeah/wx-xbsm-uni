@@ -78,11 +78,7 @@
               </view>
               <view class="tui-label_box-content tui-skeleton-rect">
                 <tui-text size="26" color="#222222" text="平台:"></tui-text>
-                <tui-text
-                  size="26"
-                  color="#4ad975"
-                  :text="getPlatformStr(platformSelectList[platformSelectIndex].platform)"
-                ></tui-text>
+                <tui-text size="26" color="#222222" :text="item.platform"></tui-text>
               </view>
               <view class="tui-label_box-content tui-skeleton-rect">
                 共订阅
@@ -101,6 +97,27 @@
               <view class="tui-label_box-content tui-skeleton-rect">
                 <tui-text size="26" color="#222222" text="状态:"></tui-text>
                 <tui-text size="26" color="#4ad975" text="已订阅"></tui-text>
+              </view>
+              <view class="tui-label_box-content tui-skeleton-rect">
+                <tui-form-button
+                  background="#4ad975"
+                  border-color="transparent"
+                  width="80px"
+                  height="30px"
+                  size="24"
+                  @click="handleClick(item, 'detail')"
+                  >查看详情</tui-form-button
+                >
+                <tui-form-button
+                  style="margin-left: 10px"
+                  background="#e45a5a"
+                  border-color="transparent"
+                  width="80px"
+                  height="30px"
+                  size="24"
+                  @click="handleClick(item, 'cancel')"
+                  >取消订阅</tui-form-button
+                >
               </view>
             </view>
           </view>
@@ -122,11 +139,19 @@
     @cancel="isRotate = false"
   >
   </tui-actionsheet>
+  <SubscribeSheet
+    v-model:showTypeSheet="showTypeSheet"
+    :subscribe-list="subscribeSheetList"
+    :show-id="showId"
+    :type="sheetType"
+    @delete-subscribe-success="deleteSubscribeSuccess"
+  ></SubscribeSheet>
   <tui-loading v-if="disablePullUp"></tui-loading>
 </template>
 
 <script setup lang="ts">
 import { getUserSubscribeList } from './api/mine-api';
+import SubscribeSheet from './components/subscribe-sheet.vue';
 const subScribeList = ref<any>([]);
 const skeletonShow = ref(true);
 // 是否旋转
@@ -142,6 +167,14 @@ const disablePullUp = ref(false);
 const searchValue = ref('');
 // 是否显示关闭按钮
 const isShut = ref(false);
+// 是否显示取消订阅弹窗
+const showTypeSheet = ref(-1);
+// 取消订阅类型
+const sheetType = ref(0);
+// 取消订阅列表
+const subscribeSheetList = ref<any>([]);
+// 取消订阅id
+const showId = ref('');
 // 平台筛选列表
 const platformSelectList = computed(() => {
   const list = [
@@ -239,9 +272,28 @@ const onScrollToLower = (e: any) => {
   pageIndex++;
   loadConcertByPlatform(platformSelectList.value[platformSelectIndex.value].platform);
 };
+// 点击查看详情、取消订阅
+const handleClick = (item: any, type: 'detail' | 'cancel') => {
+  const obj = {
+    detail: 0,
+    cancel: 1
+  };
+  console.log('item', item);
+  console.log('type', type);
+  showTypeSheet.value = 1;
+  sheetType.value = obj[type];
+  subscribeSheetList.value = item.performances;
+  showId.value = item.show_id;
+  console.log('item', item);
+  console.log('type', type);
+};
 onLoad(() => {
   loadConcertByPlatform(platformSelectList.value[platformSelectIndex.value].platform);
 });
+// 取消订阅成功
+const deleteSubscribeSuccess = () => {
+  loadConcertByPlatform(platformSelectList.value[platformSelectIndex.value].platform);
+};
 </script>
 
 <style scoped lang="scss">
