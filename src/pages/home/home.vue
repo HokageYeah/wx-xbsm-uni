@@ -146,7 +146,7 @@ const eventBus = instance!.appContext.config.globalProperties.$eventBus;
 const currentCity = ref({
   cityId: '110100',
   cityName: '北京',
-  platformCityId: '852'
+  platformCityId: '852',
 });
 // 输入框输入值
 const searchValue = ref('');
@@ -168,18 +168,18 @@ const platformSelectList = computed(() => {
     {
       text: '全部',
       color: '#2B2B2B',
-      platform: ''
+      platform: '',
     },
     {
       text: '大麦',
       color: '#2B2B2B',
-      platform: 'DM'
+      platform: 'DM',
     },
     {
       text: '猫眼',
       color: '#2B2B2B',
-      platform: 'MY'
-    }
+      platform: 'MY',
+    },
   ];
   list[platformSelectIndex.value].color = '#4ad975';
   return list;
@@ -188,7 +188,7 @@ const platformSelectList = computed(() => {
 const getPlatformStr = (platform: string) => {
   const platformList = {
     DM: '大麦',
-    MY: '猫眼'
+    MY: '猫眼',
   };
   return platformList[platform as keyof typeof platformList];
 };
@@ -216,7 +216,7 @@ const seacrhTopic = () => {
   loadConcertByPlatform(
     platformSelectList.value[platformSelectIndex.value].platform,
     currentCity.value.platformCityId,
-    searchValue.value
+    searchValue.value,
   );
 };
 
@@ -231,11 +231,11 @@ const sheetActionClick = (e: any) => {
   isRotate.value = false;
   console.log(
     'list[platformSelectIndex.value].platform',
-    platformSelectList.value[platformSelectIndex.value].platform
+    platformSelectList.value[platformSelectIndex.value].platform,
   );
   loadConcertByPlatform(
     platformSelectList.value[platformSelectIndex.value].platform,
-    currentCity.value.platformCityId
+    currentCity.value.platformCityId,
   );
 };
 
@@ -269,7 +269,7 @@ async function loadConcertByPlatform(platform: string, cty: string, keyword = ''
     platform,
     cty,
     keyword,
-    otherData: JSON.stringify(otherData)
+    otherData: JSON.stringify(otherData),
   });
   if (pageIndex === 1) {
     skeletonShow.value = false;
@@ -287,7 +287,7 @@ const onScrollToLower = (e: any) => {
   pageIndex++;
   loadConcertByPlatform(
     platformSelectList.value[platformSelectIndex.value].platform,
-    currentCity.value.platformCityId
+    currentCity.value.platformCityId,
   );
 };
 // 点击演唱会
@@ -297,8 +297,8 @@ const itemClick = (item: any) => {
     path: `/pages/home/concert-detail`,
     query: {
       id: item.showid,
-      platform: item.platform
-    }
+      platform: item.platform,
+    },
   });
 };
 onLoad(async () => {
@@ -315,7 +315,7 @@ onLoad(async () => {
     pageIndex = 1;
     loadConcertByPlatform(
       platformSelectList.value[platformSelectIndex.value].platform,
-      currentCity.value.platformCityId
+      currentCity.value.platformCityId,
     );
   });
 });
@@ -326,14 +326,14 @@ const selectCity = () => {
     query: {
       platform: platformSelectList.value[platformSelectIndex.value].platform || 'DM',
       currentCityId: currentCity.value.platformCityId, // 定位城市北京
-      currentCity: currentCity.value.cityName
-    }
+      currentCity: currentCity.value.cityName,
+    },
   });
 };
 // 登录
 const login = () => {
   router.push({
-    path: `/pages/home/concert-detail?id=${1}`
+    path: `/pages/home/concert-detail?id=${1}`,
   });
   console.log('login----');
   instance?.proxy
@@ -342,8 +342,8 @@ const login = () => {
       data: { code: 'wx_code123456' },
       method: 'POST',
       custom: {
-        auth: false
-      }
+        auth: false,
+      },
       // header: {
       //   'custom-header': 'hello' // 自定义请求头信息
       // }

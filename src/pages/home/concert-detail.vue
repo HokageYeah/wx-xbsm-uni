@@ -268,28 +268,12 @@ onLoad(async (options: any) => {
   showDetail.value = res.legacy;
 
   // 获取演唱会票价详情（检测当前场次是否有票）
-  let resDetail: any = await getH5AlConcertTicketDetail({
-    platform: options.platform,
-    show_id: options.id
-  });
-  let performViews_true = resDetail.result.performViews.filter(
-    (item: any) => item.checked === 'true'
-  );
-  resDetail.result.skuList.forEach((skuitem: any) => {
-    skuitem.checked = true;
-  });
-  performViews_true[0].skuList = resDetail.result.skuList;
-  perform_skuList.value.push(performViews_true[0]);
-  const performViews_false = resDetail.result.performViews.filter(
-    (item: any) => item.checked === 'false'
-  );
-  for (const item of performViews_false) {
-    resDetail = await getH5AlConcertTicketDetail({
-      platform: 'DM',
-      show_id: options.id,
-      session_id: item.performId
+  try {
+    let resDetail: any = await getH5AlConcertTicketDetail({
+      platform: options.platform,
+      show_id: options.id
     });
-    performViews_true = resDetail.result.performViews.filter(
+    let performViews_true = resDetail.result.performViews.filter(
       (item: any) => item.checked === 'true'
     );
     resDetail.result.skuList.forEach((skuitem: any) => {
@@ -297,24 +281,48 @@ onLoad(async (options: any) => {
     });
     performViews_true[0].skuList = resDetail.result.skuList;
     perform_skuList.value.push(performViews_true[0]);
-  }
-  console.log('perform_skuList', perform_skuList.value);
-  // // 获取当前时间
-  // const now = new Date();
-  // // 获取当前时间后一天
-  // const nextDay = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const performViews_false = resDetail.result.performViews.filter(
+      (item: any) => item.checked === 'false'
+    );
+    for (const item of performViews_false) {
+      resDetail = await getH5AlConcertTicketDetail({
+        platform: 'DM',
+        show_id: options.id,
+        session_id: item.performId
+      });
+      performViews_true = resDetail.result.performViews.filter(
+        (item: any) => item.checked === 'true'
+      );
+      resDetail.result.skuList.forEach((skuitem: any) => {
+        skuitem.checked = true;
+      });
+      performViews_true[0].skuList = resDetail.result.skuList;
+      perform_skuList.value.push(performViews_true[0]);
+    }
+    console.log('perform_skuList', perform_skuList.value);
+    // // 获取当前时间
+    // const now = new Date();
+    // // 获取当前时间后一天
+    // const nextDay = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-  deadline.value = new Date();
-  console.log('deadline.value---', deadline.value);
-  setTimeout(() => {
-    skeletonShow.value = false;
-  }, 1000);
-  console.log('showDetail', showDetail.value);
+    deadline.value = new Date();
+    console.log('deadline.value---', deadline.value);
+  } finally {
+    setTimeout(() => {
+      skeletonShow.value = false;
+    }, 1000);
+    console.log('showDetail', showDetail.value);
+  }
 
   uni.$on('subscribeWXTemplate', (res: any) => {
     console.log('subscribeWXTemplate---', res);
     recordWebConcert();
   });
+});
+onUnload(() => {
+  // 卸载订阅
+  console.log('onUnload---');
+  uni.$off('subscribeWXTemplate');
 });
 
 watch(

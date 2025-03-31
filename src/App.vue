@@ -15,7 +15,7 @@ const {
   setUserAgent,
   resetUserData,
   initStoreData,
-  setToken
+  setToken,
 } = useStore('user');
 const { initStoreAppData } = useStore('appConfig');
 let isAppLogin = false;
@@ -44,7 +44,7 @@ onLaunch((_options) => {
     cv: '', // 客户端版本号
     chv: '', // 客户端渠道版本号
     ch: '', // 客户端渠道号
-    jv: '' // 客户端版本号
+    jv: '', // 客户端版本号
   };
   setUserAgent(userAgent4Dev);
   setClientInfo(clientInfo4Dev);
@@ -57,7 +57,7 @@ onLaunch((_options) => {
   // 添加监听 app端主动通信的协议
   bridge.receiveNewNativeEvent(eventBus);
   bridge.sendNativeEvent(uniToNatLifeCycle, {
-    lifeCycle: 'onLaunch'
+    lifeCycle: 'onLaunch',
   });
   // #endif
 });
@@ -77,7 +77,7 @@ onShow((_options) => {
     uni.$emit(event, data);
   });
   bridge.sendNativeEvent(uniToNatLifeCycle, {
-    lifeCycle: 'onShow'
+    lifeCycle: 'onShow',
   });
   // #endif
 
@@ -92,7 +92,7 @@ onShow((_options) => {
           cv: '', // 客户端版本号
           chv: '', // 客户端渠道版本号
           ch: '', // 客户端渠道号
-          jv: '' // 客户端版本号
+          jv: '', // 客户端版本号
         };
         setUserAgent(userAgent4Dev);
         setClientInfo(clientInfo4Dev);
@@ -105,7 +105,7 @@ onShow((_options) => {
       // #ifdef H5
       // todo 测试用的需要删除掉
       setToken(
-        'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJfYjhkNWFhZDItZmU0Ni00OTExLWE4MDItZWIyYzYyZTNlMWY3IiwicGFzc3dvcmQiOiJwYXNzd29yZF81OGE2Y2RkMy0zNDZlLTQ1N2YtYThkYS1kNjU3NDgxNmFjZDciLCJ1c2VyX2lkIjoxLCJvcGVuaWQiOiJvQVlKczVXcUtPSDVWdUlGdWx2V3k5TnA3UUpFIiwic3RhdHVzIjoxLCJ1c2VyX2F2YXRhcl9waWMiOm51bGwsInVzZXJfYWRkcmVzcyI6bnVsbCwidXNlcl9yb2xlIjoxLCJleHAiOjE3NDI3MjM2MjB9.NiK2Ra_c3AJ5xq1uOq47rEqA039A0fyqnH-VyA687xv9FbolUAv7Xvk7Ub23PbusFIx4lI8oVWMv0rfesKaJj2oN7sSx-S5XcYUq-hR_ZHWQ-HAA8lg2XN5Pg_geIH_G-FuCVErZs_Q9h_RLEu1Hv3myp9Ag0vWy6D3smRI1zKtwT4BYoED0F6DUUnzDct5eR-Yej1R_hruCJcA_wLlxBIpBG9Y8-QrlHu4XOkwF8o8XFWpcJa2YXlMSiV0RRVjv9W2igG9kaBydrK_jjuTp8fx53hiHOWY5vuJNnTjc_U1ktET3OghQr8_3foiy5rPjK2ckaHPl_Jj2go7IFtUL7Q'
+        'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJfYjhkNWFhZDItZmU0Ni00OTExLWE4MDItZWIyYzYyZTNlMWY3IiwicGFzc3dvcmQiOiJwYXNzd29yZF81OGE2Y2RkMy0zNDZlLTQ1N2YtYThkYS1kNjU3NDgxNmFjZDciLCJ1c2VyX2lkIjoxLCJvcGVuaWQiOiJvQVlKczVXcUtPSDVWdUlGdWx2V3k5TnA3UUpFIiwic3RhdHVzIjoxLCJ1c2VyX2F2YXRhcl9waWMiOm51bGwsInVzZXJfYWRkcmVzcyI6bnVsbCwidXNlcl9yb2xlIjoxLCJleHAiOjE3NDI3MjM2MjB9.NiK2Ra_c3AJ5xq1uOq47rEqA039A0fyqnH-VyA687xv9FbolUAv7Xvk7Ub23PbusFIx4lI8oVWMv0rfesKaJj2oN7sSx-S5XcYUq-hR_ZHWQ-HAA8lg2XN5Pg_geIH_G-FuCVErZs_Q9h_RLEu1Hv3myp9Ag0vWy6D3smRI1zKtwT4BYoED0F6DUUnzDct5eR-Yej1R_hruCJcA_wLlxBIpBG9Y8-QrlHu4XOkwF8o8XFWpcJa2YXlMSiV0RRVjv9W2igG9kaBydrK_jjuTp8fx53hiHOWY5vuJNnTjc_U1ktET3OghQr8_3foiy5rPjK2ckaHPl_Jj2go7IFtUL7Q',
       );
       // #endif
     }
@@ -117,7 +117,7 @@ onShow((_options) => {
 onHide(() => {
   // #ifdef APP-PLUS
   bridge.sendNativeEvent(uniToNatLifeCycle, {
-    lifeCycle: 'onHide'
+    lifeCycle: 'onHide',
   });
   // #endif
 });
@@ -133,7 +133,7 @@ export default {
     // WXMPOriginalID: 'gh_9a830fd9843f',
     // // 公共分包模块的配置路径
     // publicSubPackgePath: '/uni_modules/uni-module-public'
-  }
+  },
 };
 </script>
 

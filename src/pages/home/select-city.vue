@@ -165,15 +165,15 @@ onLoad(async (options: any) => {
   // 获取城市列表
   const res: any = await getH5AlConcertCityListByPlatform({ platform: options.platform });
   console.log('res----', res);
-  const ret = res.ret[0];
-  if (!ret.includes('SUCCESS')) {
-    uni.showToast({
-      title: '获取城市列表失败',
-      icon: 'none'
-    });
-    return;
-  }
-  const data = res.data;
+  // const ret = res.ret[0];
+  // if (!ret.includes('SUCCESS')) {
+  //   uni.showToast({
+  //     title: '获取城市列表失败',
+  //     icon: 'none'
+  //   });
+  //   return;
+  // }
+  const data = res;
   console.log('data', data);
   localCity.value = options.currentCity || '北京';
   localCityId.value = options.currentCityId || '852';
@@ -195,7 +195,7 @@ onLoad(async (options: any) => {
 
         titleHeight.value = uni.upx2px(132);
         // lists.value = cityData.list;
-      }
+      },
     });
   }, 50);
 });
