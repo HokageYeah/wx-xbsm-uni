@@ -46,7 +46,7 @@ interface UserInfo {
   nickname?: string; // 昵称
   provinceId?: number; // 省分id
   areaCode?: number; // 地区id
-  jut?: number; // 角色 // jxlx身份类型 -1, "网站注册账号" 0, "教师" 1, "学生" 2, "家长" 3, "管理员"  99, "访客（未登录）"
+  jut?: number; // 角色 // 1 普通身份、 2 管理员、 3 访客
   userId?: number; // jxlx userId
   schoolName?: string; // 学校名称'
   schoolId?: string; // 学校id

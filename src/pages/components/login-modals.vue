@@ -57,7 +57,9 @@ const loginHandleClick = async (e: any) => {
     setToken(resDetail.token);
     const user_info = {
       webId: resDetail.user_id,
-      nickname: resDetail.username
+      nickname: resDetail.username,
+      jut: resDetail.user_role,
+      xinzxUserType: resDetail.user_role
     };
     updateUserData(user_info);
     // 保存用户

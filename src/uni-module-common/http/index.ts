@@ -455,6 +455,8 @@ instance.interceptors.response.use(
     // const userStore = $store('user');
     // const isLogin = userStore.isLogin;
     const { isLogin } = useStore('user');
+    const { resetUserData } = useStore('user');
+    const { resetAppConfigData } = useStore('appConfig');
     let errorMessage = '网络请求出错';
     if (error !== undefined || error !== null) {
       switch (error.statusCode) {
@@ -467,6 +469,10 @@ instance.interceptors.response.use(
           } else {
             errorMessage = '请先登录';
           }
+          // 清理用户信息，跳转到登录页面
+          resetUserData();
+          clearLoginStorageInfo();
+          resetAppConfigData();
           // userStore.logout(true);
           // showAuthModal();
           break;
@@ -518,6 +524,7 @@ instance.interceptors.response.use(
           mask: true
         });
     }
+    closeLoading();
     console.log('网络请求失败----http中', errorMessage);
     // {"code":1,"message":"任务不存在或已删除","status":500}
     // return Promise.reject(new Error(errorMessage));

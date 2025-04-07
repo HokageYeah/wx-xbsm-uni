@@ -66,6 +66,7 @@
 
 <script setup lang="ts">
 import loginModals from '@/pages/components/login-modals.vue';
+import { uniShowToast } from '@/uni-module-common/utils/uiUtile';
 const top = ref(0);
 const height = ref(44);
 const statusBarHeight = ref();
@@ -100,13 +101,17 @@ const bodyList: any = ref([
       img: 'my_setting',
       type: 4
     }
-    // {
-    //   title: '扫一扫',
-    //   img: 'my_setting',
-    //   type: 8
-    // }
   ]
 ]);
+watch(isLogin, (newVal) => {
+  if (isLogin.value && userInfo.value.jut === 2) {
+    bodyList.value[1].push({
+      title: '大麦平台登录',
+      img: 'my_privacy',
+      type: 5
+    });
+  }
+});
 function initNavigation(e: any) {
   console.log('initNavigation---', e);
   top.value = e.top;
@@ -123,6 +128,7 @@ const clickToMine = (type: number) => {
   switch (type) {
     case 1:
       // 联系我们
+      uniShowToast('功能暂未开放');
       break;
     case 2:
       // 我的订阅
@@ -130,14 +136,15 @@ const clickToMine = (type: number) => {
         path: '/pages/mine/subscribe-list'
       });
       break;
-    case 3:
-      // 儿童隐私保护政策
-      break;
     case 4:
       // 设置
+      uniShowToast('功能暂未开放');
       break;
     case 5:
-      // 我的收藏
+      // 大麦平台登录
+      router.push({
+        path: '/pages/mine/damai-login'
+      });
       break;
   }
 };

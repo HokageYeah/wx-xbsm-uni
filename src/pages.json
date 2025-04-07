@@ -74,6 +74,15 @@
         "navigationBarBackgroundColor": "#FFFFFF",
         "navigationBarTextStyle": "black"
       }
+    },
+    {
+      "path": "pages/mine/damai-login",
+      "name": "damaiLogin",
+      "style": {
+        "navigationBarTitleText": "大麦登录",
+        "navigationBarBackgroundColor": "#FFFFFF",
+        "navigationBarTextStyle": "black"
+      }
     }
   ],
   "subPackages": [
@@ -199,22 +208,22 @@
         "selectedIconPath": "static/images/tabbar/tabbar_app_home_select.png",
         "text": "演出首页"
       },
-      {
-        "pagePath": "pages/community/community",
-        "iconPath": "static/images/tabbar/tabbar_app_new_circle_unselect.png",
-        "selectedIconPath": "static/images/tabbar/tabbar_app_new_circle_select.png",
-        "text": "社区"
-      },
+      // {
+      //   "pagePath": "pages/community/community",
+      //   "iconPath": "static/images/tabbar/tabbar_app_new_circle_unselect.png",
+      //   "selectedIconPath": "static/images/tabbar/tabbar_app_new_circle_select.png",
+      //   "text": "社区"
+      // },
       {
         "pagePath": "pages/mine/mine",
         "iconPath": "static/images/tabbar/tabbar_app_my_unselect.png",
         "selectedIconPath": "static/images/tabbar/tabbar_app_my_select.png",
         "text": "我的"
-      },
-      {
-        "pagePath": "pages/template-index/template-test",
-        "text": "测试uni"
       }
+      // {
+      //   "pagePath": "pages/template-index/template-test",
+      //   "text": "测试uni"
+      // }
     ]
   }
 }
