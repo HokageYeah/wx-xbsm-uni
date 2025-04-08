@@ -73,6 +73,7 @@
               :checked="checked(item)"
               color="#4AD975"
               border-color="#999"
+              @change="secondClick(item)"
             >
             </tui-checkbox>
           </view>
@@ -188,6 +189,9 @@ const secondClick = (item: any) => {
   }
 };
 const checked = (item: any) => {
+  console.log('checked---item', item);
+  console.log('checked---firstLeveId', firstLeveId.value);
+  console.log('checked---cancelSubscribeData', cancelSubscribeData.value);
   return cancelSubscribeData.value[firstLeveId.value]?.includes(item.secondLevelId);
 };
 </script>

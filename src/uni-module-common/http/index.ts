@@ -16,7 +16,7 @@ import helper from '@/uni-module-common/helper/index';
 import { variableTypeDetection } from '@/uni-module-common/utils/verifyType';
 import { isLoginFunc } from '@/uni-module-common/store/user';
 import eventBus from '@/uni-module-common/utils/eventBus';
-import { clearLoginStorageInfo } from '@/uni-module-common/hooks/useLoginHooks';
+import { clearLoginStorageInfo, dealLoginOutToken } from '@/uni-module-common/hooks/useLoginHooks';
 const options = {
   // 显示操作成功消息 默认不显示
   showSuccess: false,
@@ -470,9 +470,7 @@ instance.interceptors.response.use(
             errorMessage = '请先登录';
           }
           // 清理用户信息，跳转到登录页面
-          resetUserData();
-          clearLoginStorageInfo();
-          resetAppConfigData();
+          dealLoginOutToken();
           // userStore.logout(true);
           // showAuthModal();
           break;

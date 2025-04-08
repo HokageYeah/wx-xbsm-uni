@@ -138,7 +138,9 @@ const clickToMine = (type: number) => {
       break;
     case 4:
       // 设置
-      uniShowToast('功能暂未开放');
+      router.push({
+        path: '/pages/mine/setting'
+      });
       break;
     case 5:
       // 大麦平台登录

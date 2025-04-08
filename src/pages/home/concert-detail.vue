@@ -6,6 +6,7 @@
         width="168rpx"
         height="268rpx"
         radius="8rpx"
+        mode="scaleToFill"
         :src="showDetail?.verticalPic"
       ></tui-lazyload-img>
       <view class="concert-detail-header-box">
@@ -53,11 +54,15 @@
         <tui-checkbox-group>
           <tui-label v-for="(content, cindex) in item.content" :key="cindex">
             <tui-list-cell>
-              <view class="thorui-align__center">
+              <view
+                class="thorui-align__center"
+                :class="{ 'thorui-align__center-disabled': content.disabled }"
+              >
                 <tui-checkbox
                   :checked="content.checked"
                   :value="content.value"
                   color="#4ad975"
+                  :disabled="content.disabled"
                   @change="handleChange"
                 >
                 </tui-checkbox>
@@ -324,9 +329,27 @@ onUnload(() => {
   console.log('onUnload---');
   uni.$off('subscribeWXTemplate');
 });
+const radioList = ref([
+  {
+    id: '1',
+    title: '推送方式',
+    content: [
+      { name: '订阅通知推送', value: '1-1', checked: true, disabled: false },
+      { name: '订阅推送+手机短信推送', value: '1-2', checked: false, disabled: true }
+    ]
+  },
+  {
+    id: '2',
+    title: '推送模式',
+    content: [
+      { name: '立即推送', value: '2-1', checked: true, disabled: false },
+      { name: '智能预约推送', value: '2-2', checked: false, disabled: true }
+    ]
+  }
+]);
 
 watch(
-  () => perform_skuList.value,
+  () => [perform_skuList.value, radioList.value],
   (newVal) => {
     const skulist = perform_skuList.value.filter((item: any) => {
       return item.skuList.some((skuitem: any) => skuitem.checked);
@@ -337,7 +360,14 @@ watch(
       const skulist_select = item.skuList.filter((skuitem: any) => skuitem.checked);
       perform_skuList_select += skulist_select.length;
     });
-    submitDisabled.value = perform_skuList_select === 0;
+    // 推送方式是否选中
+    const radioList_select = radioList.value[0].content.some((item: any) => item.checked);
+    // 推送模式是否选中
+    const radioList_mode_select = radioList.value[1].content.some((item: any) => item.checked);
+    console.log('radioList_select', radioList_select);
+    console.log('radioList_mode_select', radioList_mode_select);
+    submitDisabled.value =
+      perform_skuList_select === 0 || radioList_select === false || radioList_mode_select === false;
     const str = `开始订阅（公订阅${skulist.length}场 共${perform_skuList_select}价格）`;
     submitText.value = str;
   },
@@ -346,24 +376,6 @@ watch(
   }
 );
 
-const radioList = ref([
-  {
-    id: '1',
-    title: '推送方式',
-    content: [
-      { name: '订阅通知推送', value: '1-1', checked: true },
-      { name: '订阅推送+手机短信推送', value: '1-2', checked: false }
-    ]
-  },
-  {
-    id: '2',
-    title: '推送模式',
-    content: [
-      { name: '立即推送', value: '2-1', checked: true },
-      { name: '智能预约推送', value: '2-2', checked: false }
-    ]
-  }
-]);
 const handleChange = (e: any) => {
   const { value, checked } = e;
   const [id] = value.split('-');
@@ -463,6 +475,9 @@ const dateTimeChange = (e: any) => {
 <style scoped lang="scss">
 .container {
   @include normalContainer();
+  overflow-y: scroll;
+  height: calc(100vh - 100rpx);
+  min-height: calc(100vh - 100rpx);
   padding: 10px;
 }
 .concert-detail-header {
@@ -508,7 +523,7 @@ const dateTimeChange = (e: any) => {
     padding: 10px 10px 0;
     width: 100%;
     min-height: 40px;
-    background-color: red;
+    /* background-color: red; */
     @include normalFlex(row, flex-start, flex-start);
     .tui-text {
       font-size: 13px;
@@ -585,5 +600,13 @@ const dateTimeChange = (e: any) => {
   left: 0;
   right: 0;
   bottom: 0;
+}
+.thorui-align__center-disabled {
+  opacity: 0.5;
+  .tui-text {
+    color: #999;
+    /* 划掉 */
+    text-decoration: line-through;
+  }
 }
 </style>

@@ -187,12 +187,12 @@ const platformSelectList = computed(() => {
       text: '大麦',
       color: '#2B2B2B',
       platform: 'DM'
-    },
-    {
-      text: '猫眼',
-      color: '#2B2B2B',
-      platform: 'MY'
     }
+    // {
+    //   text: '猫眼',
+    //   color: '#2B2B2B',
+    //   platform: 'MY'
+    // }
   ];
   list[platformSelectIndex.value].color = '#4ad975';
   return list;
@@ -200,8 +200,8 @@ const platformSelectList = computed(() => {
 // 平台
 const getPlatformStr = (platform: string) => {
   const platformList = {
-    DM: '大麦',
-    MY: '猫眼'
+    DM: '大麦'
+    // MY: '猫眼'
   };
   return platformList[platform as keyof typeof platformList];
 };

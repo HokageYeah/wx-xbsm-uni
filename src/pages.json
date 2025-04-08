@@ -83,6 +83,15 @@
         "navigationBarBackgroundColor": "#FFFFFF",
         "navigationBarTextStyle": "black"
       }
+    },
+    {
+      "path": "pages/mine/setting",
+      "name": "setting",
+      "style": {
+        "navigationBarTitleText": "设置",
+        "navigationBarBackgroundColor": "#4ad975",
+        "navigationBarTextStyle": "white"
+      }
     }
   ],
   "subPackages": [
