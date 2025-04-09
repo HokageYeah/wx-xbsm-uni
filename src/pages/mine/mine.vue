@@ -103,15 +103,19 @@ const bodyList: any = ref([
     }
   ]
 ]);
-watch(isLogin, (newVal) => {
-  if (isLogin.value && userInfo.value.jut === 2) {
-    bodyList.value[1].push({
-      title: '大麦平台登录',
-      img: 'my_privacy',
-      type: 5
-    });
-  }
-});
+watch(
+  isLogin,
+  (newVal) => {
+    if (isLogin.value && userInfo.value.jut === 2) {
+      bodyList.value[1].push({
+        title: '大麦平台登录',
+        img: 'my_privacy',
+        type: 5
+      });
+    }
+  },
+  { immediate: true }
+);
 function initNavigation(e: any) {
   console.log('initNavigation---', e);
   top.value = e.top;
