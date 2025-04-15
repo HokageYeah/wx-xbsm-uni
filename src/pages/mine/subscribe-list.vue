@@ -97,6 +97,13 @@
               <view class="tui-label_box-content tui-skeleton-rect">
                 <tui-text size="26" color="#222222" text="状态:"></tui-text>
                 <tui-text size="26" color="#4ad975" text="已订阅"></tui-text>
+                <!-- 添加一个监控中的动画 -->
+                <view class="monitoring-animation">
+                  <text class="monitoring-text">监控中</text>
+                  <text class="dot dot1"></text>
+                  <text class="dot dot2"></text>
+                  <text class="dot dot3"></text>
+                </view>
               </view>
               <view class="tui-label_box-content tui-skeleton-rect">
                 <tui-form-button
@@ -365,7 +372,80 @@ const deleteSubscribeSuccess = () => {
       :first-child {
         margin-right: 5px;
       }
+      /* 监控中的动画 */
+      .monitoring-animation {
+        @include normalFlex(row, flex-start, center);
+        margin-left: 0px;
+        font-size: 14px;
+        color: #ff9500;
+        .monitoring-text {
+          position: relative;
+          overflow: hidden;
+
+          &::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -100%;
+            width: 150%; /* 增加宽度使闪光更明显 */
+            height: 120%; /* 增加高度覆盖整个文字 */
+            background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.95) 50%,
+              /* 增加亮度 */ rgba(255, 255, 255, 0) 100%
+            );
+            animation: shineEffect 5s infinite; /* 缩短动画时间 */
+            transform: skewX(-20deg); /* 添加倾斜效果 */
+            box-shadow: 0 0 10px 3px rgba(255, 255, 255, 1); /* 添加发光效果 */
+          }
+        }
+        .dot {
+          width: 4px;
+          height: 4px;
+          margin-right: 2px;
+          border-radius: 50%;
+          background-color: #ff9500;
+          opacity: 0;
+          animation: dotAnimation 1.4s infinite;
+        }
+        .dot1 {
+          animation-delay: 0s;
+        }
+
+        .dot2 {
+          animation-delay: 0.2s;
+        }
+
+        .dot3 {
+          animation-delay: 0.4s;
+        }
+      }
     }
+  }
+}
+/* 定义点的动画 */
+@keyframes dotAnimation {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* 定义闪光效果动画 */
+@keyframes shineEffect {
+  0% {
+    left: -100%;
+  }
+  20% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
   }
 }
 </style>
