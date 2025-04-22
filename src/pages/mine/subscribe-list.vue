@@ -391,7 +391,7 @@ const deleteSubscribeSuccess = () => {
             height: 120%; /* 增加高度覆盖整个文字 */
             background: linear-gradient(
               to right,
-              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0) 40%,
               rgba(255, 255, 255, 0.95) 50%,
               /* 增加亮度 */ rgba(255, 255, 255, 0) 100%
             );
